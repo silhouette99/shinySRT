@@ -534,9 +534,9 @@ preparedata_shinyspatial <- function(dat,
 
   ### config
   meta_group <- lapply(colnames(coordi), function(x) {
-    if (class(coordi[[x]]) == 'factor' |
-        class(coordi[[x]]) == 'character') {
-      if (class(coordi[, x]) == 'character') {
+    if (length(grep(pattern = 'factor',class(coordi[[x]]))) > 0 |
+        length(grep(pattern = 'character',class(coordi[[x]]))) > 0) {
+      if (length(grep(pattern = 'character',class(coordi[[x]]))) > 0) {
         coordi[, x] <- factor(coordi[, x], levels = unique(coordi[, x]))
       }
       Unit <- paste(levels(coordi[, x]), collapse = '|')
