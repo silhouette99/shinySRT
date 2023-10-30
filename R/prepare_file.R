@@ -264,6 +264,8 @@ preparedata_shinyspatial <- function(dat,
       rownames(coordi) <-
         paste(dat@colData[[slice_samples[1]]], dat@colData@rownames, sep = '_')
 
+      coordi_ <- coordi[,c(1,2,3)]
+
       colnames(coordi) <- c('imagerow', 'imagecol', 'slice_sample')
 
       coordi_ <- subset(coordi,coordi$slice_sample == names(ima)[x])
@@ -280,7 +282,48 @@ preparedata_shinyspatial <- function(dat,
     })
     names(coordi) <- NULL
     coordi <- do.call(rbind, coordi)
-  } else if(tolower(tools::file_ext(dat)) == "h5ad"){
+  } else if (class(dat)[1] == "list") {
+    if (length(dat[['redutcion']]) ==
+        0) {
+      dmExist = FALSE
+    } else{
+      dmExist = TRUE
+    }
+
+    if (!dmExist) {
+      warning(
+        paste0(
+          "ShinySpatial did not detect any dimension reduction data \n",
+          "       e.g. umap / tsne. Has any analysis been performed?"
+        )
+      )
+    }
+
+    if (length(dat[['metadata']]$slice_sample) == 0) {
+      drExist = FALSE
+    }
+    if (!drExist) {
+      stop(paste0("ShinySpatial did not detect any coordination data"))
+    }
+
+    ima <- dat[['image']]
+
+    slice_samples <- lapply(colnames(dat[['metadata']]), function(x) {
+      if (length(intersect(unique(dat[['metadata']][, x]), names(ima))) > 0) {
+        samples <- x
+      } else{
+        samples <- NULL
+      }
+      samples
+    }) %>% unlist()
+
+    ima <- ima[which(names(ima) %in% dat[['metadata']][, slice_samples[1]])]
+    coordi <- dat[['coordination']]
+
+    coordi <- coordi[,c(2,1)]
+
+    colnames(coordi) <- c('imagerow','imagecol')
+  }else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
 
     if (length(grep(pattern = '^X_',obj[['obsm']]$names)) ==
@@ -471,6 +514,42 @@ preparedata_shinyspatial <- function(dat,
     if (length(which(is.na(coordi$orig.ident))) > 0) {
       stop('some cells can not be identified !')
     }
+  }else if (class(dat)[1] == "list") {
+
+    meta <- dat[['metadata']] %>% as.data.frame()
+    if (dmExist) {
+      embedding <-
+        lapply(dat[['reduction']], function(x) {
+          embedding <- x %>% as.data.frame()
+          if (ncol(embedding) > 5) {
+            embedding <- embedding[, 1:5]
+          } else{
+            embedding <- embedding
+          }
+          # rownames(embedding) <-
+          #   paste(dat@colData[[slice_samples]], dat@colData@rownames, sep = '_')
+          return(embedding)
+        })
+      embedding <- do.call(cbind, embedding)
+      meta <- cbind(meta, embedding)
+    }
+
+    # rownames(meta) <-
+    #   paste(dat@colData[[slice_samples]], dat@colData@rownames, sep = '_')
+
+    coordi <- coordi[match(rownames(meta),rownames(coordi)),]
+    coordi <- cbind(coordi,meta)
+
+
+    if (is.na(meta.to.include[1])) {
+      meta.to.include = colnames(meta)
+    }
+    if (length(meta.to.include) < 2) {
+      stop("At least 2 metadata is required!")
+    }
+    if (length(which(is.na(coordi$orig.ident))) > 0) {
+      stop('some cells can not be identified !')
+    }
   }else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
 
@@ -531,6 +610,10 @@ preparedata_shinyspatial <- function(dat,
 
     obj$close_all()
   }
+
+
+
+
 
   ### config
   meta_group <- lapply(colnames(coordi), function(x) {
@@ -645,6 +728,11 @@ preparedata_shinyspatial <- function(dat,
                                                                                          gex.assay[1])),sep = '_')
     defGenes = gex.rownm[1:10]
 
+  } else if (class(dat)[1] == "list") {
+    gex.matdim = dim(dat[['data']])
+    gex.rownm = rownames(dat[['data']])
+    gex.colnm = colnames(dat[['data']])
+    defGenes = gex.rownm[1:10]
   } else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
     if (is.na(gex.assay[1])) {
@@ -790,6 +878,14 @@ preparedata_shinyspatial <- function(dat,
       as.matrix(SummarizedExperiment::assay(dat,
                                             gex.assay[1])[(i * chk + 1):gex.matdim[1],])
     mat_exp$close_all()
+  }else if (class(dat)[1] == 'list') {
+    for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
+      mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
+        as.matrix(dat[['data']][((i - 1) * chk + 1):(i * chk),])
+    }
+    mat_exp.grp.data[(i * chk + 1):gex.matdim[1],] <-
+      as.matrix(dat[['data']][(i * chk + 1):gex.matdim[1],])
+    mat_exp$close_all()
   }else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
     da <- rep(NA, length(gex.colnm)*length(gex.rownm))
@@ -806,6 +902,10 @@ preparedata_shinyspatial <- function(dat,
     mat_exp$close_all()
     obj$close_all()
   }
+
+
+
+
 
   df_select = list()
   df_select$meta1 = meta_group[default == 1 & info == TRUE]$group
