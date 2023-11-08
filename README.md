@@ -5,7 +5,18 @@
 ### Description
 `ShinySRT` an interactive and sharable Shiny-based web application for spatially resolved transcriptomics. It is designed to process various prevalent formats of spatial transcriptome data, enabling the creation of an interactive interface tailored for comprehensive data analysis.The interactive interface created by ShinySpatial is entirely open-source and is amenable to extensive customization to align with the specific requirements of the user.
 
-==========
+===========
+
+### Features
+- Written in R, using a shiny application that generates an interactive interface that can be mounted to a server or shared on the web.
+- It supports several major spatial transcriptome data formats (Seurat (Visim and image-based-spatial)/SpatialExperiment (and SingleCellExperiment)/h5ad), in addition to specific list imports.
+- Multiple spatial transcriptome slice samples data can be imported into shiny web app.
+- Customizing spatial spot annotations and and spot selection
+- Multivariate comparisons. Analyzing the change in the dependent variable with the independent variable in different groups
+- Visualization images and data sheet downloads
+- One-step generation of the shiny interface, shiny app is completely open source and can be customized
+
+===============
 
 ### Installation
 To get started, you need to check that the required installation packages for `ShinySRT` are already installed:
@@ -28,18 +39,8 @@ packages = packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(packages)){install.packages(newPkg)}
 ```
 
-===========
 
-### Features
-- Written in R, using a shiny application that generates an interactive interface that can be mounted to a server or shared on the web.
-- It supports several major spatial transcriptome data formats (Seurat (Visim and image-based-spatial)/SpatialExperiment (and SingleCellExperiment)/h5ad), in addition to specific list imports.
-- Multiple spatial transcriptome slice samples data can be imported into shiny web app.
-- Customizing spatial spot annotations and and spot selection
-- Multivariate comparisons. Analyzing the change in the dependent variable with the independent variable in different groups
-- Visualization images and data sheet downloads
-- One-step generation of the shiny interface, shiny app is completely open source and can be customized
-
-==============
+====================
 
 ### Content and Guide
 The basic workflow is that `ShinySRT` generates the required configuration files and shiny app code by utilizing spatial transcriptome data objects.
