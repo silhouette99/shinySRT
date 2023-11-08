@@ -8,13 +8,13 @@
 ===========
 
 ### Features
-> Written in R, using a shiny application that generates an interactive interface that can be mounted to a server or shared on the web.
-> It supports several major spatial transcriptome data formats (Seurat (Visim and image-based-spatial)/SpatialExperiment (and SingleCellExperiment)/h5ad), in addition to specific list imports.
-> Multiple spatial transcriptome slice samples data can be imported into shiny web app.
-> Customizing spatial spot annotations and and spot selection
-> Multivariate comparisons. Analyzing the change in the dependent variable with the independent variable in different groups
-> Visualization images and data sheet downloads
-> One-step generation of the shiny interface, shiny app is completely open source and can be customized
+- Written in R, using a shiny application that generates an interactive interface that can be mounted to a server or shared on the web.
+- It supports several major spatial transcriptome data formats (Seurat (Visim and image-based-spatial)/SpatialExperiment (and SingleCellExperiment)/h5ad), in addition to specific list imports.
+- Multiple spatial transcriptome slice samples data can be imported into shiny web app.
+- Customizing spatial spot annotations and and spot selection
+- Multivariate comparisons. Analyzing the change in the dependent variable with the independent variable in different groups
+- Visualization images and data sheet downloads
+- One-step generation of the shiny interface, shiny app is completely open source and can be customized
 
 ==============
 
