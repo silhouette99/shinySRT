@@ -28,12 +28,12 @@ ui_load <- function() {
   )
 }
 ## ui header
-ui_head <- function(){
+ui_head <- function(title){
   glue::glue(
     '### Start server code\n',
     'ui <- dashboardPage(\n',
     '  ### project title\n',
-    '  dashboardHeader(title = \"shinyspatial example\"),\n',
+    '  dashboardHeader(title = \"{title}\"),\n',
     '  ### side meta menu\n',
     '  dashboardSidebar(\n',
     '    ### page menu\n',
@@ -55,7 +55,7 @@ ui_head <- function(){
     '              h2(strong(HTML(\"SpotInfo vs GeneExpr\"))),\n',
     '              h4(\"Spot information vs gene expression on reduced dimensions\"),\n',
     '              \"In this tab, users can visualise both Spot information and gene \",\n',
-    '              \"expression side-by-side on low-dimensional representions.\",\n',
+    '              \"expression side-by-side on slice spatial representions.\",\n',
     '              br(),br(),\n\n'
   )
 }
@@ -148,7 +148,7 @@ p1_tab_ui <- function(){
   glue::glue(
     '),br(),br(),),\n',
     'fluidRow(column(width = 7,align = \"center\",br(),br(),box(status = \"primary\",solidHeader = TRUE,collapsible = TRUE,DTOutput(outputId = \'spotsinfor\'),width = 10)),\n',
-    '  column(5,br(),br(),h4(\"Cell numbers / statistics\"),radioButtons(\"splt\",\"Split continuous cell info into:\",choices = c(\"Quartile\", \"Decile\"),\n',
+    '  column(5,br(),br(),h4(\"spot numbers / statistics\"),radioButtons(\"splt\",\"Split continuous spot info into:\",choices = c(\"Quartile\", \"Decile\"),\n',
     '          selected = \"Decile\",inline = TRUE),shiny::sliderInput(inputId = \'stat_thrd\',label = \"Gene expression threshold\",min = 0,max = 1,value = 0),\n',
     '         box(width = 12,align = \"center\",status = \"primary\",solidHeader = TRUE,collapsible = TRUE,DTOutput(outputId = \'statis_gene\')))))),\n\n'
   )
@@ -216,7 +216,7 @@ ui_p2_p <- function(df_select) {
 page3_ui_head <- function(){
   glue::glue(
     'tabItem(tabName = \"vio\",h2(strong(HTML(\"Viol / Box data chart\"))),h4(\'Spot information / gene expression violin plot / box plot\'),\n',
-    '   \'In this tab, users can visualise the gene expression or continuous cell information (e.g. Number of UMIs / module score) across groups of cells (e.g. libary / clusters).\',\n',
+    '   \'In this tab, users can visualise the gene expression or continuous spot information (e.g. Number of UMIs / module score) across groups of spots (e.g. libary / clusters).\',\n',
     '   br(),br(),\n',
     '   fluidRow(column(12,fluidRow(column(3,style = \"border-right: 2px solid black\",\n',
     '     box(width = 12,br(),br(),\n',
@@ -280,7 +280,7 @@ p3_vg_plot <- function(df_select){
 ## page4
 page4_ui <- function(df_select){
   page4_ui_head <- c(
-    'tabItem(tabName = \"portion\",h2(strong(HTML(\"Portion data chart\"))),h4(\'Proportion / cell numbers across different spot information\'),\n',
+    'tabItem(tabName = \"portion\",h2(strong(HTML(\"Portion data chart\"))),h4(\'Proportion / spot numbers across different spot information\'),\n',
     '        \'In this tab, users can visualise the composition of spots based on one discrete spots information across another discrete spots information.\',\n',
     '        br(),br(),fluidRow(column(12,fluidRow(\n',
     '          column(3,style = \"border-right: 2px solid black\",\n',
@@ -346,7 +346,7 @@ page4_ui <- function(df_select){
 ## page5
 page5_ui <- function(df_select){
   page5_ui_head <- glue::glue('tabItem(tabName = \"heatdot\",h2(strong(HTML(\"Gene expression heatmap/dotplot\"))),\n',
-                              '  h4(\'In this tab, users can visualise the gene expression patterns of multiple genes grouped by categorical cell information (e.g. library / cluster).\'),\n',
+                              '  h4(\'In this tab, users can visualise the gene expression patterns of multiple genes grouped by categorical spot information (e.g. library / cluster).\'),\n',
                               '  \'The normalised expression are averaged, log-transformed and then plotted.\',br(),br(),\n',
                               '  fluidRow(column(12,fluidRow(column(3,style = \"border-right: 2px solid black\",box(width = 12,br(),br(),\n',
                               '        fluidRow(\n',

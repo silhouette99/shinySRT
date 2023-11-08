@@ -4,7 +4,7 @@
 \alias{prepare_code}
 \title{perpare the code for shinyspatial}
 \usage{
-prepare_code(shiny.dir = "shinyspatial_app")
+prepare_code(shiny.dir = "shinyspatial_app", title = "spatial_example")
 }
 \arguments{
 \item{shiny.dir}{save the shiny code and data}

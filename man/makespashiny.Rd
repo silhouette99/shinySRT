@@ -9,6 +9,7 @@ makespashiny(
   meta.to.include = NA,
   maxlevel = 50,
   shiny.dir = "shinyspatial_app",
+  title = "spatial_example",
   chunkSize = 500,
   gex.assay = NA,
   gex.slot = c("data", "scale.data", "counts"),

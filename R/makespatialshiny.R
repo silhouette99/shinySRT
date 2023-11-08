@@ -63,6 +63,7 @@ makespashiny <- function(dat,
                          meta.to.include = NA,
                          maxlevel = 50,
                          shiny.dir = 'shinyspatial_app',
+                         title = 'spatial_example',
                          chunkSize = 500,
                          gex.assay = NA,
                          gex.slot = c("data", "scale.data", "counts"),
@@ -83,5 +84,5 @@ makespashiny <- function(dat,
     default.gene2 = default.gene2,
     default.multigene = default.multigene
   )
-  prepare_code(shiny.dir)
+  prepare_code(shiny.dir,title)
 }

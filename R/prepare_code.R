@@ -20,7 +20,7 @@
 #' prepare_code(shiny.dir = 'shinyspatial_app')
 #'
 #' @export
-prepare_code <- function(shiny.dir = 'shinyspatial_app'){
+prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example'){
 
   filename = paste0(shiny.dir, "/server.R")
   df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
@@ -54,7 +54,7 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app'){
     append = T
   )
 
-  readr::write_file(ui_head(), file = filename, append = T)
+  readr::write_file(ui_head(title), file = filename, append = T)
 
   ## page1
   readr::write_file(page1_ui_head(), file = filename, append = T)

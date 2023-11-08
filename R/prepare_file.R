@@ -89,6 +89,42 @@ heat_col <- function(){
     "#00CAFF", "#00DEFF", "#00F2FF", "#27FFD7", "#8CFF71", "#F1FF0D", "#FFEE00", "#FFDB00", "#FFC900", "#FFB700",
     "#FFA500", "#FF9200", "#FF8000", "#FF6D00", "#FF5B00", "#FF4800", "#FF3600", "#FF2400", "#FF1200", "#FF0000")
 }
+## get vizgene
+# vizgene_bgplot <- function(viz_im) {
+#   coordinations <- Seurat::GetTissueCoordinates(viz_im)
+#   graphics::plot.new()
+#   graphics::par(
+#     pty = 's',
+#     bg = 'white',
+#     mar = c(0, 0, 1, 0),
+#     oma = c(0, 0, 1, 0)
+#   )
+#   graphics::plot(
+#     x = coordinations$x,
+#     y = coordinations$y,
+#     col = ggplot2::alpha("white",
+#                          0),
+#     xlab = NA_character_,
+#     ylab = NA_character_,
+#     axes = F,
+#     xlim = unit(c(
+#       0, max(coordinations$x) - min(coordinations$x)
+#     ), 'npc'),
+#     ylim = unit(c(
+#       0, max(coordinations$y) - min(coordinations$y)
+#     ), 'npc')
+#   )
+#   graphics::points(
+#     x = coordinations$x,
+#     y = coordinations$y,
+#     pch = 19,
+#     # cex = pt_size + pt_size * 0.1,
+#     cex = unit(1, "npc") * 0.7,
+#     col = ggplot2::alpha(colour = 'grey90',
+#                          alpha = 1),
+#     asp = 1
+#   )
+# }
 ## prepared shiny data
 preparedata_shinyspatial <- function(dat,
                                      meta.to.include = NA,
@@ -107,6 +143,9 @@ preparedata_shinyspatial <- function(dat,
 
   if (class(dat)[1] == "Seurat") {
     ## get the image array and coordination matrix
+
+
+
     if (length(names(dat@images)) == 0) {
       drExist = FALSE
     }
@@ -114,25 +153,61 @@ preparedata_shinyspatial <- function(dat,
       stop(paste0("ShinySpatial did not detect any coordination data"))
     }
 
-    image <- dat@images
-    ### seurat spot coordination are needed to flip
-    coordi <- lapply(names(image), function(x) {
-      coordi <- Seurat::GetTissueCoordinates(image[[x]])
-      coordi$slice_sample <- x
-      xrange <- c(0, dim(image[[x]])[2])
-      yrange <- c(0, dim(image[[x]])[1])
-      coordi$imagerow <-
-        (yrange[2] - yrange[1]) / 2 - (coordi$imagerow - (yrange[2] - yrange[1]) / 2)
-      return(coordi)
-    })
-    names(coordi) <- NULL
-    coordi <- do.call(rbind, coordi)
+    if (class(dat@images[[1]])[[1]] == 'FOV') {
+      image <- dat@images
+      #
+      # for (i in names(image)) {
+      #   png(paste0(i, '.png'))
+      #   vizgene_bgplot(image[[i]])
+      #   dev.off()
+      # }
+      #
+      # ima <- lapply(paste0(names(image), '.png'), function(x) {
+      #   imgs <- png::readPNG(x)
+      # })
 
-    ### get image data
-    ima <- lapply(names(image), function(x) {
-      image[[x]]@image
-    })
-    names(ima) <- names(image)
+      ima <- list(rep(NULL,length(image)))
+
+
+      names(ima) <- names(image)
+      coordi <- lapply(names(ima), function(x) {
+        coordi <- Seurat::GetTissueCoordinates(image[[x]])
+        coordi$slice_sample <- x
+        rownames(coordi) <- coordi$cell
+        coordi <- coordi[,c(2,1,3,4)]
+
+        colnames(coordi) <- c('imagerow','imagecol','cell', 'slice_sample')
+        fs <- (max(coordi$imagerow) - min(coordi$imagerow))/480
+        coordi$imagerow <- coordi$imagerow/fs
+        coordi$imagecol <- coordi$imagecol/fs
+        return(coordi)
+      })
+
+      names(coordi) <- NULL
+      coordi <- do.call(rbind, coordi)
+    } else if (class(dat@images[[1]])[[1]] == 'VisiumV1') {
+      image <- dat@images
+      ### seurat spot coordination are needed to flip
+      coordi <- lapply(names(image), function(x) {
+        coordi <- Seurat::GetTissueCoordinates(image[[x]])
+        coordi$slice_sample <- x
+        xrange <- c(0, dim(image[[x]])[2])
+        yrange <- c(0, dim(image[[x]])[1])
+        coordi$imagerow <-
+          (yrange[2] - yrange[1]) / 2 - (coordi$imagerow - (yrange[2] - yrange[1]) / 2)
+        return(coordi)
+      })
+      names(coordi) <- NULL
+      coordi <- do.call(rbind, coordi)
+
+      ### get image data
+      ima <- lapply(names(image), function(x) {
+        image[[x]]@image
+      })
+      names(ima) <- names(image)
+    }
+
+
   }else if (class(dat)[1] == "SingleCellExperiment") {
     if (length(SingleCellExperiment::reducedDimNames(dat)) ==
         0) {
@@ -436,6 +511,11 @@ preparedata_shinyspatial <- function(dat,
       meta <- cbind(meta, embedding)
     }
 
+    cells <- intersect(rownames(coordi),rownames(meta))
+    coordi <- coordi[which(rownames(coordi) %in% cells),]
+    meta <- meta[which(rownames(meta) %in% cells),]
+    dat <- dat[,cells]
+
 
     coordi <- cbind(coordi[rownames(x = meta),],meta)
 
@@ -467,9 +547,15 @@ preparedata_shinyspatial <- function(dat,
       embedding <- do.call(cbind, embedding)
       meta <- cbind(meta, embedding)
     }
-
     rownames(meta) <-
       paste(dat@colData[[slice_samples]], dat@colData@rownames, sep = '_')
+
+
+    cells <- intersect(rownames(coordi),rownames(meta))
+    coordi <- coordi[which(rownames(coordi) %in% cells),]
+    meta <- meta[which(rownames(meta) %in% cells),]
+
+    coordi <- cbind(coordi[rownames(x = meta),],meta)
 
     coordi <- cbind(coordi[rownames(x = meta), ], meta)
     if (is.na(meta.to.include[1])) {
@@ -502,6 +588,10 @@ preparedata_shinyspatial <- function(dat,
 
     rownames(meta) <-
       paste(dat@colData$sample_id, dat@colData@rownames, sep = '_')
+
+    cells <- intersect(rownames(coordi),rownames(meta))
+    coordi <- coordi[which(rownames(coordi) %in% cells),]
+    meta <- meta[which(rownames(meta) %in% cells),]
 
     coordi <- cbind(coordi[rownames(x = meta),],meta)
 
@@ -536,6 +626,10 @@ preparedata_shinyspatial <- function(dat,
 
     # rownames(meta) <-
     #   paste(dat@colData[[slice_samples]], dat@colData@rownames, sep = '_')
+    cells <- intersect(rownames(coordi),rownames(meta))
+    coordi <- coordi[which(rownames(coordi) %in% cells),]
+    meta <- meta[which(rownames(meta) %in% cells),]
+
 
     coordi <- coordi[match(rownames(meta),rownames(coordi)),]
     coordi <- cbind(coordi,meta)
@@ -595,6 +689,9 @@ preparedata_shinyspatial <- function(dat,
 
     rownames(meta) <- meta$spots
 
+    cells <- intersect(rownames(coordi),rownames(meta))
+    coordi <- coordi[which(rownames(coordi) %in% cells),]
+    meta <- meta[which(rownames(meta) %in% cells),]
 
     coordi <- cbind(coordi[rownames(x = meta),],meta)
 
@@ -619,7 +716,7 @@ preparedata_shinyspatial <- function(dat,
   meta_group <- lapply(colnames(coordi), function(x) {
     if (length(grep(pattern = 'factor',class(coordi[[x]]))) > 0 |
         length(grep(pattern = 'character',class(coordi[[x]]))) > 0) {
-      if (length(grep(pattern = 'character',class(coordi[[x]]))) > 0) {
+      if (length(grep(pattern = 'character',class(coordi[[x]]))) > 0 & length(unique(coordi[, x])) < maxlevel) {
         coordi[, x] <- factor(coordi[, x], levels = unique(coordi[, x]))
       }
       Unit <- paste(levels(coordi[, x]), collapse = '|')
@@ -628,7 +725,12 @@ preparedata_shinyspatial <- function(dat,
       metas <- data.frame(matrix(nrow = 1, ncol = 5,))
       colnames(metas) <-
         c('group', 'unit', 'color', 'info', 'default')
-      metas[1,] <- c(x, Unit, color, TRUE, 0)
+      if(length(unique(coordi[, x])) < maxlevel){
+        metas[1,] <- c(x, Unit, color, TRUE, 0)
+      }else{
+        metas[1,] <- c(x, Unit, color, FALSE, 0)
+      }
+
       metas
     } else if (length(grep(pattern = '\\.', unique(coordi[, x]))) == 0 &
                length(unique(coordi[, x])) < maxlevel) {
@@ -749,9 +851,9 @@ preparedata_shinyspatial <- function(dat,
   ## gene mapping(ensembl id to symbol id)
   if (gene.mapping[1] == TRUE) {
     if (sum(grepl("^ENSG000", gex.rownm)) >= sum(grepl("^ENSMUSG000",gex.rownm))) {
-      tmp1 = fread(system.file("extdata",'hg_map.txt',package = 'ShinySpatial'))
+      tmp1 = fread(system.file("extdata",'hg_map.txt.gz',package = 'ShinySpatial'))
     } else {
-      tmp1 = fread(system.file("extdata",'mm_map.txt',package = 'ShinySpatial'))
+      tmp1 = fread(system.file("extdata",'mm_map.txt.gz',package = 'ShinySpatial'))
     }
     gene.mapping = tmp1$GeneName
     names(gene.mapping) = tmp1$EnsemblID
@@ -829,9 +931,15 @@ preparedata_shinyspatial <- function(dat,
   genesets = genesets[order(names(genesets))]
   genesets = genesets[order(nchar(names(genesets)))]
 
-  boxsize <- lapply(ima, function(x) {
-    dim(x)[2]
-  }) %>% unlist()
+  if(!is.null(ima[[1]])){
+    boxsize <- lapply(ima, function(x) {
+      dim(x)[2]
+    }) %>% unlist()
+  }else{
+    boxsize <- c(max(coordi$imagerow)-min(coordi$imagerow),max(coordi$imagecol)-min(coordi$imagecol))
+  }
+
+
 
 
   ## expression gene matrix
@@ -904,7 +1012,22 @@ preparedata_shinyspatial <- function(dat,
   }
 
 
-
+  if(!is.null(ima[[1]])){
+    ranges <- lapply(ima, function(x){
+      list(
+        xrange = c(0, dim(x)[2]),
+        yrange = c(0, dim(x)[1])
+      )
+    })
+  }else{
+    ranges <- lapply(ima, function(x){
+      list(
+        xrange = c(0,(max(coordi$imagecol) - min(coordi$imagecol)) + 0.01*(max(coordi$imagecol) - min(coordi$imagecol))),
+        yrange = c(0,(max(coordi$imagerow) - min(coordi$imagerow)) + 0.01*(max(coordi$imagerow) - min(coordi$imagerow)))
+      )
+    })
+  }
+  names(ranges) <- names(ima)
 
 
   df_select = list()
@@ -913,6 +1036,7 @@ preparedata_shinyspatial <- function(dat,
   df_select$gene1 = default.gene1
   df_select$gene2 = default.gene2
   df_select$genes = default.multigene
+  df_select$ranges = ranges
   df_select$boxsize = max(boxsize) + 0.1 * max(boxsize)
   df_select$maxarea <-
     ceiling(abs(max(coordi$imagecol) - min(coordi$imagecol)) * 10)
@@ -925,3 +1049,4 @@ preparedata_shinyspatial <- function(dat,
   saveRDS(df_select, paste0(shiny.dir, '/df_select.Rds'))
   saveRDS(ima, paste0(shiny.dir, '/image.Rds'))
 }
+
