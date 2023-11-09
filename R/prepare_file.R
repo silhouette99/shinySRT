@@ -454,7 +454,12 @@ preparedata_shinyspatial <- function(dat,
     ### seurat spot coordination are needed to flip
     coordi <- lapply(names(ima), function(x) {
       coordi<- obj[['obsm']][['spatial']]$read()%>%t()%>%as.data.frame()
-      coordi$sample_id <- meta$library_id
+      if(length(names(ima)) > 1){
+        coordi$sample_id <- meta$library_id
+      }else{
+        coordi$sample_id <- x
+      }
+
       rownames(coordi) <- meta$spots
       coordi_ <- subset(coordi,coordi$sample_id == x)
 
