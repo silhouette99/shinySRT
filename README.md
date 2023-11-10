@@ -48,8 +48,13 @@ We use a 10x spatial transcriptome data within the lab as an example to demonstr
 
 ``` r
 library(ShinySpatial)
+library(Seurat)
+library(SeuratData)
 
-makespashiny(dat,title = 'ShinySRT exmaple')
+InstallData("stxBrain")
+brain <- LoadData("stxBrain"， type = "anterior1")
+
+makespashiny(brain,title = 'ShinySRT exmaple')
 ```
 Run one line of code, a new directory called `/shinyspatial_app` will be created in the current directory, where the shiny app exists, and where the user can call `shiny::runApp` to run the app locally in Rstudio.In addition, it is possible to use the server's app remotely by mounting the shiny app's directory in the `/srv/shiny-server` directory of the server that has the proxy. In addition, the app can be used remotely by mounting the shiny app directory in the `/srv/shiny-server` directory of a server with a proxy. shiny apps can also be deployed to other web platforms in other ways [shinyapps.io](https://www.shinyapps.io/)
 
