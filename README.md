@@ -28,7 +28,7 @@
 
 Users can build own list containing matrix, meta, data, coordinate information, image.
 
-'---'
+---
 
 ### Installation
 To get started, you need to check that the required installation packages for `ShinySRT` are already installed:
