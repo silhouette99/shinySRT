@@ -17,7 +17,6 @@
 - One-step generation of the shiny interface, shiny app is completely open source and can be customized
 
 
-#### Importable data
 | Data      | Object Type |
 | ----------- | ----------- |
 | 10x Visim (Seurat)     | Seurat       |
