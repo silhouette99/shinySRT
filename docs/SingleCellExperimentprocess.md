@@ -1,12 +1,13 @@
 ## SingleCellExperiment process
 
-SingleCellExperiment (SCE) and SpatialExperiment (SPE) are the same S4 type of storage object, SCE is generally the storage object for single cell data, in the example data of spatialLIBD, we found that there is also the SCE object for spatial transcriptomes, the following is the example code:
+SingleCellExperiment (SCE) and SpatialExperiment (SPE) are the same S4 type of storage object, SCE is generally the storage object for single cell data, in the example data of spatialLIBD, we found that there is also the SCE object for spatial transcriptomes[SPE data](https://www.dropbox.com/s/f4wcvtdq428y73p/Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata?dl=1), the following is the example code:
 
 ``` r
 library(spatialLIBD)
 
+# spe <- fetch_data(type = "spe")
 load(
-  '/mnt/raid62/pzz/shiny_data/obj/Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata'
+  'Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata'
 )
 
 ## 
