@@ -1,6 +1,6 @@
 ## vizgene process
 
-空间转录组单细胞精度是一个发展趋势，vizgene是一种已经商用的单细胞精度空间转录组平台，好的一点是数据可以通过seurat处理，下面是实例代码，示例数据为vizgene公共平台数据[vizgene](https://console.cloud.google.com/storage/browser/public-datasets-vizgen-merfish;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
+Spatial transcriptome single-cell precision is a development trend, vizgene is a kind of single-cell precision spatial transcriptome platform that has been commercially available, the good point is that the data can be processed by the seurat, the following is the example code, the sample data is the vizgene public platform data [vizgene](https://console.cloud.google .com/storage/browser/public-datasets-vizgen-merfish;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
 
 ``` r
 library(Seurat)

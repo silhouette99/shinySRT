@@ -1,9 +1,8 @@
 ## H5ad process
 
 h5ad is a common way of storing data in python, which can be called directly without memory, and scanpy is a very mature spatial transcriptome data processing tool in python.
-The following is still using 10x Visim public data [Mouse Brain Serial Section 2 (Sagittal-Anterior)](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial -section-2-sagittal-anterior-1-standard), including the data h5ad transformation and `ShinySRT` example code:
+The following is still using 10x Visim public data [Mouse Brain Serial Section 2 (Sagittal-Anterior)](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial-section-2-sagittal-anterior-1-standard), including the data h5ad transformation and `ShinySRT` example code:
 
-Translated with www.DeepL.com/Translator (free version)
 
 ``` python
 import scanpy as sc
