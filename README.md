@@ -16,15 +16,15 @@
 - Visualization images and data sheet downloads
 - One-step generation of the shiny interface, shiny app is completely open source and can be customized
 
-
-| Data      | Object Type |
-| ----------- | ----------- |
-| 10x Visim (Seurat)     | Seurat       |
-| SingleCellExperiment   | SCE        |
-| SpatialExperiment   | SPE        |
-| Vizgene (Seurat)  | Seurat        |
-| 10x Visim (scanpy)   | h5ad        |
-| Customizable list   | list        |
+[SCE obj](docs/SingleCellExperimentprocess.md)
+| Data      | Object Type | source |
+| ----------- | ----------- | ----------- |
+| 10x Visim (Seurat)     | Seurat       | [seurat obj](### Content and Guide) |
+| SingleCellExperiment   | SCE        | [SCE obj](docs/SingleCellExperimentprocess.md) |
+| SpatialExperiment   | SPE        | [SPE obj](docs/SpatialExperimentprocess.md) |
+| Vizgene (Seurat)  | Seurat        | [viz_seurat obj](docs/vizgeneprocess.md) |
+| 10x Visim (scanpy)   | h5ad        | [h5ad class](docs/scanpyprocess.md) |
+| Customizable list   | list        | [lists](docs/customlistprocess.md) |
 
 Users can build own list containing matrix, meta, data, coordinate information, image.
 
