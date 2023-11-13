@@ -8,7 +8,7 @@ lib_server()
 }
 \arguments{
 \item{shiny.dir}{specify directory to create the shiny app in. Default is
-  to create a new directory named "shinyspatial_app"
+to create a new directory named "shinyspatial_app"
 
 lib_server : load package in ui scirpts}
 }

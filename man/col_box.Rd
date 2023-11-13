@@ -20,12 +20,12 @@ this number to reduce memory consumption. Should not be less than 10}
 \item{gex.assay}{assay in single-cell data object to use for plotting
 gene expression, which must match one of the following:
 \itemize{
-  \item{Seurat objects}: "RNA" or "integrated" assay,
-    default is "RNA"
-  \item{SCE objects}: "logcounts" or "normcounts" or "counts",
-    default is "logcounts"
-  \item{h5ad files}: "X" or any assay in "layers",
-    default is "X"
+\item{Seurat objects}: "RNA" or "integrated" assay,
+default is "RNA"
+\item{SCE objects}: "logcounts" or "normcounts" or "counts",
+default is "logcounts"
+\item{h5ad files}: "X" or any assay in "layers",
+default is "X"
 }}
 
 \item{gene.mapping}{specifies whether to convert human / mouse Ensembl gene

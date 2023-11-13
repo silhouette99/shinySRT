@@ -16,8 +16,8 @@ server.R and ui.R required for shiny app
 #' Generate code files required for shiny app containing only one dataset. In
 particular, two R scripts will be generated, namely \code{server.R} and
 \code{ui.R}. If users want to include multiple dataset in one shiny app.
- Note that both \code{preparedata_shinyspatial} and \code{prepare_code}
- functions are ran when
+Note that both \code{preparedata_shinyspatial} and \code{prepare_code}
+functions are ran when
 running the wrapper function \code{makespashiny}.
 }
 \examples{
