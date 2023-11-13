@@ -1,6 +1,6 @@
 ## vizgene process
 
-Spatial transcriptome single-cell precision is a development trend, vizgene is a kind of single-cell precision spatial transcriptome platform that has been commercially available, the good point is that the data can be processed by the seurat, the following is the example code, the sample data is the vizgene public platform data [vizgene](https://console.cloud.google .com/storage/browser/public-datasets-vizgen-merfish;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
+Spatial transcriptome single-cell precision is a development trend, vizgene is a kind of single-cell precision spatial transcriptome platform that has been commercially available, the good point is that the data can be processed by the seurat, the following is the example code, the sample data is the vizgene public platform data [vizgene](https://console.cloud.google.com/storage/browser/public-datasets-vizgen-merfish;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
 
 ``` r
 library(Seurat)
