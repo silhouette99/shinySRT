@@ -3,20 +3,25 @@
 ---
 
 ### Description
-`ShinySRT` an interactive and sharable Shiny-based web application for spatially resolved transcriptomics. It is designed to process various prevalent formats of spatial transcriptome data, enabling the creation of an interactive interface tailored for comprehensive data analysis.The interactive interface created by ShinySpatial is entirely open-source and is amenable to extensive customization to align with the specific requirements of the user.
+
+`ShinySRT` is a Shiny-based web application developed for the analysis of spatially resolved transcriptomics data. This application is designed to handle multiple formats of spatial transcriptome data and allows for the creation of an interactive interface that supports comprehensive data analysis. The interactive interface provided by ShinySRT is open-source and can be highly customized to meet the specific needs of users.
+
+
+
 
 ---
 
 ### Features
-- Written in R, using a shiny application that generates an interactive interface that can be mounted to a server or shared on the web.
-- It supports several major spatial transcriptome data formats, in addition to specific list imports.
-- Multiple spatial transcriptome slice samples data can be imported into shiny web app.
-- Customizing spatial spot annotations and and spot selection
-- Multivariate comparisons. Analyzing the change in the dependent variable with the independent variable in different groups
-- Visualization images and data sheet downloads
-- One-step generation of the shiny interface, shiny app is completely open source and can be customized
 
-[SCE obj](docs/SingleCellExperimentprocess.md)
+- Developed under R, utilizing a Shiny application that generates an interactive interface deployable on a server or shareable via the web.
+- Provides compatibility with various prominent formats of spatial transcriptome data.
+- Facilitates the import of multiple ST datasets into the Shiny web application.
+- Allows for the customization of spatial spot annotations and spot selection criteria.
+- Supports multivariate comparisons, enabling the analysis of how the dependent variable changes across different groups of independent variables.
+- Offers features for visualizing images and downloading data sheets.
+- Simplifies the creation of the Shiny interface in a single step, and the Shiny app is entirely open source and customizable.
+
+
 | Data      | Object Type | source |
 | ----------- | ----------- | ----------- |
 | 10x Visim (Seurat)     | Seurat       | [seurat obj](https://www.10xgenomics.com/resources/datasets?menu%5Bproducts.name%5D=Spatial%20Gene%20Expression&query=&page=1&configure%5BhitsPerPage%5D=50&configure%5BmaxValuesPerFacet%5D=1000) |
@@ -26,36 +31,65 @@
 | 10x Visim (scanpy)   | h5ad        | [h5ad class](docs/scanpyprocess.md) |
 | Customizable list   | list        | [lists](docs/customlistprocess.md) |
 
-Users can build own list containing matrix, meta, data, coordinate information, image.
+
+Users could build a customized list containing expression matrix, metadata, image as well as coordinate information.
 
 ---
 
 ### Installation
-To get started, you need to check that the required installation packages for `ShinySRT` are already installed:
+To begin, it's important to verify whether the necessary installation packages for `ShinySRT` have already been installed:
 
 ``` r
 packages <- c(
-               'SingleCellExperiment','SpatialExperiment','data.table','dplyr',
-               'glue','hdf5r','readr','reticulate','ggplot2','graphics','gridExtra',
-               'patchwork','RColorBrewer','maps','Cairo','grid','ggtree','aplot',
-               'magrittr','ggrepel','ggdendro','Matrix','scales','aplot'
-             )
-packages = packages[!(packages %in% installed.packages()[,"Package"])]
-if(length(packages)){install.packages(newPkg)}             
+  'SingleCellExperiment',
+  'SpatialExperiment',
+  'data.table',
+  'dplyr',
+  'glue',
+  'hdf5r',
+  'readr',
+  'reticulate',
+  'ggplot2',
+  'graphics',
+  'gridExtra',
+  'patchwork',
+  'RColorBrewer',
+  'maps',
+  'Cairo',
+  'grid',
+  'ggtree',
+  'aplot',
+  'magrittr',
+  'ggrepel',
+  'ggdendro',
+  'Matrix',
+  'scales',
+  'aplot'
+)
+packages = packages[!(packages %in% installed.packages()[, "Package"])]
+
+if (length(packages)) {
+  install.packages(newPkg)
+}
+
 ```
+
 Then check that all required shiny-related packages are installed:
 
 ``` r
 packages <- c('shiny','shinyhelper','DT','shinydashboard')
 packages = packages[!(packages %in% installed.packages()[,"Package"])]
-if(length(packages)){install.packages(newPkg)}
+if (length(packages)) {
+  install.packages(newPkg)
+}
 ```
 
 
 ---
 
 ### Content and Guide
-The basic workflow is that `ShinySRT` generates the required configuration files and shiny app code by utilizing spatial transcriptome data objects.The specific operation code is as follows:
+
+The fundamental process involves `ShinySRT` generating the essential configuration files and web application file using spatial transcriptome data objects. The precise operational code is outlined as follows:
 
 ``` r
 # 10x Visim
@@ -73,22 +107,25 @@ library(SpatialExperiment)
 example(read10xVisium, echo = FALSE)
 
 makespashiny(spe,title = 'ShinySRT exmaple')
+
 ```
 
-The spatial transcriptome data was processed by scanpy to obtain the h5ad file, and the following code uses public data from the 10x platform [Mouse Brain Serial Section 2 (Sagittal-Anterior)](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial-section-2-sagittal-anterior-1-standard)
+The ST was processed using scanpy to obtain the h5ad file, while the following URL was used to access the source data from [10X](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial-section-2-sagittal-anterior-1-standard).
+
 
 ``` r
 # h5ad
 makespashiny(spe,title = 'ShinySRT exmaple')
 ```
 
-Run one line of code, a new directory called `/shinyspatial_app` will be created in the current directory, where the shiny app exists, and where the user can call `shiny::runApp` to run the app locally in Rstudio.In addition, it is possible to use the server's app remotely by mounting the shiny app's directory in the `/srv/shiny-server` directory of the server that has the proxy. In addition, the app can be used remotely by mounting the shiny app directory in the `/srv/shiny-server` directory of a server with a proxy. shiny apps can also be deployed to other web platforms in other ways [shinyapps.io](https://www.shinyapps.io/)
+Upon running a single line of code, a new directory named `/shinyspatial_app` will be generated in the current directory, where the Shiny app is located. Users can utilize `shiny::runApp` to locally run the app within R env. Furthermore, the app can be deployed remotely by placing the shiny app's directory into the `/srv/shiny-server` directory of a server that has a proxy. It's worth noting that Shiny apps can also be deployed on various web platforms using alternative methods. For more comprehensive information, please refer to [shinyapps.io](https://www.shinyapps.io/).
 
 We use a 10x spatial transcriptome data within the lab as an example to demonstrate content of `ShinySRT`.
 
-The shiny app generated by `ShinySRT` consists of six main modules, with the module names shown in the leftmost menu bar in the figure. At the bottom of the menu bar(highlighted in orange box), there is an input field for importing annotations for new spots(highlighted in red box).
+The Shiny app created by `ShinySRT` comprises six primary modules, as indicated by the module names in the leftmost menu bar in the figure. At the bottom of the menu bar (highlighted in an orange box), there is an input field for importing annotations for new spots (highlighted in a red box).
 
-The current display is the first module "SpotInfo vs GeneExpr", which mainly shows the relationship between the annotation information of spatial spots and gene expression. Switch the annotation information of the spots by the drop-down menu at "Spot information" and select the displayed genes by the drop-down menu at "Gene expression". On the right hand side is the area for customized spot selection which can be used to select the area by drawing circle or clicking, and it need to name the annotation area before selecting.
+
+The current view represents the initial module titled "SpotInfo vs GeneExpr," primarily illustrating the connection between spatial spot annotations and gene expression. You can switch the spot annotations using the dropdown menu labeled "Spot information" and choose the displayed genes from the dropdown menu labeled "Gene expression." On the right-hand side, there is a section for personalized spot selection, allowing you to pick an area either by drawing a circle or by clicking. Remember to provide a name for the selected annotation area before proceeding with the selection.
 
 
 ![](image/content1.png)
