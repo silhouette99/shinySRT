@@ -106,8 +106,12 @@ makespashiny(brain,title = 'ShinySRT exmaple')
 library(SpatialExperiment)
 example(read10xVisium, echo = FALSE)
 
+<<<<<<< HEAD
 makespashiny(spe,title = 'ShinySRT exmaple')
 
+=======
+makespashiny(spe,title = 'ShinySRT exmaple',gex.assay = 'counts')
+>>>>>>> cc878c1 (nineth push)
 ```
 
 The ST was processed using scanpy to obtain the h5ad file, while the following URL was used to access the source data from [10X](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial-section-2-sagittal-anterior-1-standard).
@@ -115,7 +119,7 @@ The ST was processed using scanpy to obtain the h5ad file, while the following U
 
 ``` r
 # h5ad
-makespashiny(spe,title = 'ShinySRT exmaple')
+makespashiny(dat = 'Anterior.h5ad',title = 'spatial experiment',gex.assay = 'counts')
 ```
 
 Upon running a single line of code, a new directory named `/shinyspatial_app` will be generated in the current directory, where the Shiny app is located. Users can utilize `shiny::runApp` to locally run the app within R env. Furthermore, the app can be deployed remotely by placing the shiny app's directory into the `/srv/shiny-server` directory of a server that has a proxy. It's worth noting that Shiny apps can also be deployed on various web platforms using alternative methods. For more comprehensive information, please refer to [shinyapps.io](https://www.shinyapps.io/).
