@@ -9,7 +9,6 @@ ui_load()
 \arguments{
 \item{df_select}{default information to provide the slice number
 
-
 ui_load : load package in ui scirpts
 ui_head : with web's header and menu}
 }
