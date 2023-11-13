@@ -1,4 +1,4 @@
-#' perpare the code for shinyspatial
+#' prepare the code for shinySRT
 #'
 #'
 #' #' Generate code files required for shiny app containing only one dataset. In
@@ -10,8 +10,9 @@
 #'
 #'
 #' @param shiny.dir save the shiny code and data
+#' @param title the title of the given shinySRT
 #'
-#' @return server.R and ui.R required for shiny app
+#' @return
 #'
 #' @import data.table readr glue
 #'
