@@ -47,5 +47,5 @@ adata.write(results_file)
 ```
 
 ``` r
-makespashiny(dat = 'Anterior.h5ad',title = 'spatial experiment',gex.assay = 'counts')
+makespashiny(dat = 'Anterior.h5ad',title = 'spatial experiment')
 ```
