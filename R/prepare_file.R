@@ -813,7 +813,12 @@ preparedata_shinyspatial <- function(dat,
       colnames(dat) = paste0("cell_", seq(ncol(dat)))
     }
     if (is.na(gex.assay[1])) {
-      gex.assay = "logcounts"
+      if(length(grep(pattern = 'logcounts', assayNames(dat))) > 0){
+        gex.assay = "logcounts"
+      }else{
+        gex.assay = assayNames(dat)[1]
+      }
+      
     }
     gex.matdim = dim(SummarizedExperiment::assay(dat, gex.assay[1]))
     gex.rownm = rownames(SummarizedExperiment::assay(dat,
@@ -825,8 +830,14 @@ preparedata_shinyspatial <- function(dat,
     if (is.null(colnames(dat)[1])) {
       colnames(dat) = paste0("cell_", seq(ncol(dat)))
     }
+    
     if (is.na(gex.assay[1])) {
-      gex.assay = "logcounts"
+      if(length(grep(pattern = 'logcounts', assayNames(dat))) > 0){
+        gex.assay = "logcounts"
+      }else{
+        gex.assay = assayNames(dat)[1]
+      }
+      
     }
     gex.matdim = dim(SummarizedExperiment::assay(dat, gex.assay[1]))
     gex.rownm = rownames(SummarizedExperiment::assay(dat,
