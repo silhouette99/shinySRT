@@ -16,7 +16,7 @@
 - Developed under R, utilizing a Shiny application that generates an interactive interface deployable on a server or shareable via the web.
 - Provides compatibility with various prominent formats of spatial transcriptome data.
 - Facilitates the import of multiple ST datasets into the Shiny web application.
-- Allows for the customization of spatial spot annotations and spot selection criteria.
+- Allows for the customization of spatial spot selection.
 - Supports multivariate comparisons, enabling the analysis of how the dependent variable changes across different groups of independent variables.
 - Offers features for visualizing images and downloading data sheets.
 - Simplifies the creation of the Shiny interface in a single step, and the Shiny app is entirely open source and customizable.
@@ -65,7 +65,9 @@ packages <- c(
   'Matrix',
   'scales',
   'aplot',
-  'keys'
+  'keys',
+  'ggiraph',
+  'ggpubr'
 )
 packages = packages[!(packages %in% installed.packages()[, "Package"])]
 
@@ -101,13 +103,13 @@ library(SeuratData)
 InstallData("stxBrain")
 brain <- LoadData("stxBrain"， type = "anterior1")
 
-makespashiny(brain,title = 'ShinySRT exmaple')
+CreatshinySRT(brain,title = 'ShinySRT exmaple')
 
 # SpatialExperiment
 library(SpatialExperiment)
 example(read10xVisium, echo = FALSE)
 
-makespashiny(spe,title = 'ShinySRT exmaple',gex.assay = 'counts')
+CreatshinySRT(spe,title = 'ShinySRT exmaple',gex.assay = 'counts')
 
 ## run shiny app
 shiny::runApp('shinyspatial_app/')
@@ -118,7 +120,7 @@ The ST was processed using scanpy to obtain the h5ad file, while the following U
 
 ``` r
 # h5ad
-makespashiny(dat = 'Anterior.h5ad',title = 'spatial experiment')
+CreatshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
 ## run shiny app
 shiny::runApp('shinyspatial_app/')
 ```
@@ -127,49 +129,37 @@ Upon running a single line of code, a new directory named `/shinyspatial_app` wi
 
 We use a 10x spatial transcriptome data within the lab as an example to demonstrate content of `ShinySRT`.
 
-The Shiny app created by `ShinySRT` comprises six primary modules, as indicated by the module names in the leftmost menu bar in the figure. At the bottom of the menu bar (highlighted in an orange box), there is an input field for importing annotations for new spots (highlighted in a red box).
+The Shiny app created by `ShinySRT` comprises five primary modules, as indicated by the module names in the leftmost menu bar in the figure. At the bottom of the menu bar (highlighted in an orange box), there is an input field for importing annotations for new spots (highlighted in a red box).
 
 
-The current view represents the initial module titled "SpotInfo vs GeneExpr," primarily illustrating the connection between spatial spot annotations and gene expression. You can switch the spot annotations using the dropdown menu labeled "Spot information" and choose the displayed genes from the dropdown menu labeled "Gene expression." On the right-hand side, there is a section for personalized spot selection, allowing you to pick an area either by drawing a circle or by clicking. Remember to provide a name for the selected annotation area before proceeding with the selection.
+The current view represents the initial module titled "SpotInfo vs GeneExpr," primarily illustrating the connection between spatial spot annotations and gene expression. Users can switch the spot annotations using the dropdown menu labeled "Spot information" and choose the displayed genes from the dropdown menu labeled "Gene expression." The top of the gene in the display of the expression of the spots information statistics(highlighted in a green box), You can select regions for comparison by using the following spatial plot, these operations will also be reflected in the table, the following interactive selection of spots using ggiraph's method, by hovering over the spatial plot to get the information of each spatial plot, please refer to the specific use of [ggiraph](https:// davidgohel.github.io/ggiraph/).
 
 
-![](image/content1.png)
+![](image/content1-1.png)
 
 
-For storing new annotation information, you need to first create a column name for this group of annotation information, and then stored in the form of columns in the following figure in the metadata list, the list can be downloaded and exported, and then use this annotation can be copied from the column and pasted in the left input area. metadata on the right side of the gene in the display of the expression of the spots information statistics.
+The second module "GeneExpr vs GeneExpr" focuses on the relationship between the spatial expression of two genes, thresholds for gene expression can be set using the sliders on the right, and the table right shows the statistics for the co-determination of the genes.
 
 
-![](image/content2.png)
-
-
-The second module "GeneExpr vs GeneExpr" focuses on the relationship between the spatial expression of two genes, in the same way as the selection of spots in the first module.
-
-
-![](image/content3.png)
-
-
-In addition to this, Module 4 demonstrates the relationship between two genes by the spatial co-determination of two genes in the same slice sample. Thresholds for gene expression can be set using the sliders on the right, and the table below shows the statistics for the co-determination of the genes.
-
-
-![](image/content4.png)
+![](image/content2-1.png)
 
 
 The third module, "Viol / Box data chart", plots traditional statistical box and violin plots based on the annotation information and gene expression or scoring of the spot, showing the relationship between the annotation information and genes.
 
 
-![](image/content5.png)
+![](image/content3-1.png)
 
 
 The fourth module, "Portion data chart", shows the proportion of one grouping of information over another, e.g., the proportion or number of seurat subgroups in each anatomical region of the brain, with most of the spots in the HT region belonging to the four subgroups.
 
 
-![](image/content6.png)
+![](image/content4-1.png)
 
 
-The sixth module shows the expression of genes in different regions by means of "bubble charts or heatmaps", which can also be clustered in rows and columns respectively.
+The fifth module shows the expression of genes in different regions by means of "bubble charts or heatmaps", which can also be clustered in rows and columns respectively.
 
 
-![](image/content7.png)
+![](image/content5-1.png)
 
 
 ---

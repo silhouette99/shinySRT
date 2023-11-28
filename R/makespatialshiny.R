@@ -43,7 +43,7 @@
 #'
 #'
 #' @examples
-#' makespashiny(
+#' CreatshinySRT(
 #' dat,
 #' meta.to.include = NA,
 #' maxlevel = 50,
@@ -59,18 +59,18 @@
 #'
 #'
 #' @export
-makespashiny <- function(dat,
-                         meta.to.include = NA,
-                         maxlevel = 50,
-                         shiny.dir = 'shinyspatial_app',
-                         title = 'spatial_example',
-                         chunkSize = 500,
-                         gex.assay = NA,
-                         gex.slot = c("data", "scale.data", "counts"),
-                         gene.mapping = TRUE,
-                         default.gene1 = NA,
-                         default.gene2 = NA,
-                         default.multigene = NA) {
+CreatshinySRT <- function(dat,
+                          meta.to.include = NA,
+                          maxlevel = 50,
+                          shiny.dir = 'shinyspatial_app',
+                          title = 'spatial_example',
+                          chunkSize = 500,
+                          gex.assay = NA,
+                          gex.slot = c("data", "scale.data", "counts"),
+                          gene.mapping = TRUE,
+                          default.gene1 = NA,
+                          default.gene2 = NA,
+                          default.multigene = NA) {
   preparedata_shinyspatial(
     dat,
     meta.to.include = meta.to.include,

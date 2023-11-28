@@ -21,7 +21,7 @@
 #'
 #' @export
 prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example'){
-
+  
   filename = paste0(shiny.dir, "/server.R")
   df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
   # library
@@ -34,13 +34,12 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   readr::write_file(fun_server(),file = filename,append = T)
   # page
   readr::write_file(server_heads(df_select = df_select),file = filename,append = T)
-  readr::write_file(page1_server(df_select = df_select),file = filename,append = T)
-  readr::write_file(page2_server(df_select = df_select),file = filename,append = T)
-  readr::write_file(page3_server(df_select = df_select),file = filename,append = T)
-  readr::write_file(page4_server(df_select = df_select),file = filename,append = T)
-  readr::write_file(page5_server(df_select = df_select),file = filename,append = T)
-  readr::write_file(page6_server(df_select = df_select),file = filename,append = T)
-
+  readr::write_file(sp_server_p1(df_select = df_select),file = filename,append = T)
+  readr::write_file(sp_server_p2(df_select = df_select),file = filename,append = T)
+  readr::write_file(sp_server_p3(df_select = df_select),file = filename,append = T)
+  readr::write_file(sp_server_p4(df_select = df_select),file = filename,append = T)
+  readr::write_file(sp_server_p5(df_select = df_select),file = filename,append = T)
+  
   ##
   filename = paste0(shiny.dir, "/ui.R")
   readr::write_file(ui_load(), file = filename)
@@ -53,28 +52,20 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
     file = filename,
     append = T
   )
-
+  
   readr::write_file(ui_head(title), file = filename, append = T)
-
   ## page1
-  readr::write_file(page1_ui_head(), file = filename, append = T)
-  uip1 <- ui_p1_p(df_select = df_select)
-  for (i in uip1) {
-    readr::write_file(i, file = filename, append = T)}
-  readr::write_file(p1_tab_ui(), file = filename, append = T)
+  readr::write_file(ui_p1(df_select), file = filename, append = T)
   ## page2
-  readr::write_file(page2_ui_head(), file = filename, append = T)
-  uip2 <- ui_p2_p(df_select = df_select)
-  for (i in uip2) {
-    readr::write_file(i, file = filename, append = T)
-  }
+  readr::write_file(ui_p2(df_select), file = filename, append = T)
   ## page3
-  readr::write_file(page3_ui_head(), file = filename,append = T)
-  readr::write_file(p3_vg_plot(df_select = df_select), file = filename,append = T)
+  readr::write_file(ui_p3(df_select), file = filename,append = T)
   ## page4
-  readr::write_file(page4_ui(df_select = df_select), file = filename,append = T)
+  readr::write_file(ui_p4(df_select = df_select), file = filename,append = T)
   ## page5
-  readr::write_file(page5_ui(df_select = df_select), file = filename,append = T)
-  ## page6
-  readr::write_file(page6_ui(df_select = df_select), file = filename,append = T)
+  readr::write_file(ui_p5(df_select = df_select), file = filename,append = T)
 }
+
+
+
+
