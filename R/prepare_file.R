@@ -66,66 +66,6 @@
 #'
 #'
 #' @export
-## clusters colors displayed on shiny web
-col_box <- function(){
-  c(
-    '#ff3030','#1e90ff','#ffd700','#ff6eb4','#bf3eff',
-    '#c1ffc1','#00ffff','#ff1493','#7fff00','#ff0000',
-    '#0000ff','#00ff00','#ffc125','#ffb5c5','#9b30ff',
-    '#54ff9f','#87ceff','#ffaeb9','#c0ff3e','#ff4040',
-    '#836fff','#00ff7f','#ffff00','#ff3e96','#ff83fa',
-    '#9aff9a','#4876ff','#ff3e96','#00f5ff','#8b1a1a',
-    '#104e8b','#008b00','#8b7500','#8b3a62','#68228b',
-    '#698b69','#008b8b','#8b0a50','#458b00','#eedfcc',
-    '#76eec6','#eec591','#dbe9e9','#8ee5ee','#ee6a50',
-    '#eee8cd','#eead0e','#bcee68','#ee7600','#8deeee',
-    '#00b2ee','#ee6363','#eeeee0','#eee685','#b2dfee',
-    '#eedc82','#ee00ee','#ee30a7','#006400'
-  )
-}
-## gradual change of color
-heat_col <- function(){
-  c("#0000FF", "#0013FF", "#0028FF", "#003CFF", "#0050FF", "#0065FF", "#0078FF", "#008DFF", "#00A1FF", "#00B5FF",
-    "#00CAFF", "#00DEFF", "#00F2FF", "#27FFD7", "#8CFF71", "#F1FF0D", "#FFEE00", "#FFDB00", "#FFC900", "#FFB700",
-    "#FFA500", "#FF9200", "#FF8000", "#FF6D00", "#FF5B00", "#FF4800", "#FF3600", "#FF2400", "#FF1200", "#FF0000")
-}
-## get vizgene
-# vizgene_bgplot <- function(viz_im) {
-#   coordinations <- Seurat::GetTissueCoordinates(viz_im)
-#   graphics::plot.new()
-#   graphics::par(
-#     pty = 's',
-#     bg = 'white',
-#     mar = c(0, 0, 1, 0),
-#     oma = c(0, 0, 1, 0)
-#   )
-#   graphics::plot(
-#     x = coordinations$x,
-#     y = coordinations$y,
-#     col = ggplot2::alpha("white",
-#                          0),
-#     xlab = NA_character_,
-#     ylab = NA_character_,
-#     axes = F,
-#     xlim = unit(c(
-#       0, max(coordinations$x) - min(coordinations$x)
-#     ), 'npc'),
-#     ylim = unit(c(
-#       0, max(coordinations$y) - min(coordinations$y)
-#     ), 'npc')
-#   )
-#   graphics::points(
-#     x = coordinations$x,
-#     y = coordinations$y,
-#     pch = 19,
-#     # cex = pt_size + pt_size * 0.1,
-#     cex = unit(1, "npc") * 0.7,
-#     col = ggplot2::alpha(colour = 'grey90',
-#                          alpha = 1),
-#     asp = 1
-#   )
-# }
-## prepared shiny data
 preparedata_shinyspatial <- function(dat,
                                      meta.to.include = NA,
                                      maxlevel = 50,
@@ -818,7 +758,7 @@ preparedata_shinyspatial <- function(dat,
       }else{
         gex.assay = assayNames(dat)[1]
       }
-      
+
     }
     gex.matdim = dim(SummarizedExperiment::assay(dat, gex.assay[1]))
     gex.rownm = rownames(SummarizedExperiment::assay(dat,
@@ -830,14 +770,14 @@ preparedata_shinyspatial <- function(dat,
     if (is.null(colnames(dat)[1])) {
       colnames(dat) = paste0("cell_", seq(ncol(dat)))
     }
-    
+
     if (is.na(gex.assay[1])) {
       if(length(grep(pattern = 'logcounts', assayNames(dat))) > 0){
         gex.assay = "logcounts"
       }else{
         gex.assay = assayNames(dat)[1]
       }
-      
+
     }
     gex.matdim = dim(SummarizedExperiment::assay(dat, gex.assay[1]))
     gex.rownm = rownames(SummarizedExperiment::assay(dat,
@@ -1083,3 +1023,63 @@ preparedata_shinyspatial <- function(dat,
   saveRDS(ima, paste0(shiny.dir, '/image.Rds'))
 }
 
+## clusters colors displayed on shiny web
+col_box <- function(){
+  c(
+    '#ff3030','#1e90ff','#ffd700','#ff6eb4','#bf3eff',
+    '#c1ffc1','#00ffff','#ff1493','#7fff00','#ff0000',
+    '#0000ff','#00ff00','#ffc125','#ffb5c5','#9b30ff',
+    '#54ff9f','#87ceff','#ffaeb9','#c0ff3e','#ff4040',
+    '#836fff','#00ff7f','#ffff00','#ff3e96','#ff83fa',
+    '#9aff9a','#4876ff','#ff3e96','#00f5ff','#8b1a1a',
+    '#104e8b','#008b00','#8b7500','#8b3a62','#68228b',
+    '#698b69','#008b8b','#8b0a50','#458b00','#eedfcc',
+    '#76eec6','#eec591','#dbe9e9','#8ee5ee','#ee6a50',
+    '#eee8cd','#eead0e','#bcee68','#ee7600','#8deeee',
+    '#00b2ee','#ee6363','#eeeee0','#eee685','#b2dfee',
+    '#eedc82','#ee00ee','#ee30a7','#006400'
+  )
+}
+## gradual change of color
+heat_col <- function(){
+  c("#0000FF", "#0013FF", "#0028FF", "#003CFF", "#0050FF", "#0065FF", "#0078FF", "#008DFF", "#00A1FF", "#00B5FF",
+    "#00CAFF", "#00DEFF", "#00F2FF", "#27FFD7", "#8CFF71", "#F1FF0D", "#FFEE00", "#FFDB00", "#FFC900", "#FFB700",
+    "#FFA500", "#FF9200", "#FF8000", "#FF6D00", "#FF5B00", "#FF4800", "#FF3600", "#FF2400", "#FF1200", "#FF0000")
+}
+## get vizgene
+# vizgene_bgplot <- function(viz_im) {
+#   coordinations <- Seurat::GetTissueCoordinates(viz_im)
+#   graphics::plot.new()
+#   graphics::par(
+#     pty = 's',
+#     bg = 'white',
+#     mar = c(0, 0, 1, 0),
+#     oma = c(0, 0, 1, 0)
+#   )
+#   graphics::plot(
+#     x = coordinations$x,
+#     y = coordinations$y,
+#     col = ggplot2::alpha("white",
+#                          0),
+#     xlab = NA_character_,
+#     ylab = NA_character_,
+#     axes = F,
+#     xlim = unit(c(
+#       0, max(coordinations$x) - min(coordinations$x)
+#     ), 'npc'),
+#     ylim = unit(c(
+#       0, max(coordinations$y) - min(coordinations$y)
+#     ), 'npc')
+#   )
+#   graphics::points(
+#     x = coordinations$x,
+#     y = coordinations$y,
+#     pch = 19,
+#     # cex = pt_size + pt_size * 0.1,
+#     cex = unit(1, "npc") * 0.7,
+#     col = ggplot2::alpha(colour = 'grey90',
+#                          alpha = 1),
+#     asp = 1
+#   )
+# }
+## prepared shiny data
