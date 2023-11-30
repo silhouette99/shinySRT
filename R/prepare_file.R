@@ -653,8 +653,10 @@ preparedata_shinyspatial <- function(dat,
     obj$close_all()
   }
   
+  coordi <- coordi %>% distinct(.keep_all = T)
   
-  
+  colnames(coordi)[which(duplicated(colnames(coordi)))] <-
+    paste(colnames(coordi)[which(duplicated(colnames(coordi)))], sample(length(colnames(coordi)[which(duplicated(colnames(coordi)))])))
   
   
   ### config

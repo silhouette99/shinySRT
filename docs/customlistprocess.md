@@ -4,6 +4,7 @@ There are many types of spatial transcriptome data and it is difficult to cover 
 ``` r
 library(png)
 library(SPATA2)
+library(ShinySRT)
 
 dat <- readRDS('313_T.RDS')
 dat <- SPATA2::updateSpataObject(dat)
@@ -41,5 +42,5 @@ obj <- list(image = images,data = data,coordination = coordinates,metadata = met
 dir.create('lists')
 setwd('lists')
 
-makespashiny(obj,title = 'shiny list')
+CreatshinySRT(obj,title = 'shiny list')
 ```

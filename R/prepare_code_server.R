@@ -1344,6 +1344,9 @@ sp_server_p1 <- function(df_select){
   bgsp <- lapply(1:length(df_select$slice), function(x){
     glue::glue("input$bg_plot{x}_selected")
   }) %>% unlist() %>% paste(collapse = ',')
+  ftsp <- lapply(1:length(df_select$slice), function(x){
+    glue::glue("input$feature{x}_selected")
+  }) %>% unlist() %>% paste(collapse = ',')
   
   p1_gtab <- glue::glue(
     '### gene expression\n',
@@ -1354,7 +1357,7 @@ sp_server_p1 <- function(df_select){
     '  }} else {{sps <- unique(c({bgsp}))}}\n',
     '  DT::datatable(tab_exp_clu(inpsplt = input$splt,\n',
     '                            data = data,threshold = input$stat_thrd,\n',
-    '                            meta = add_meta$meta,highlight = unique(c(sps,{bgsp})),\n',
+    '                            meta = add_meta$meta,highlight = unique(c(sps,{ftsp})),\n',
     '                            gene = input$gene,\n',
     '                            group.by = input$meta1_select,\n',
     '                            meta_group = meta_group_add$meta),\n',
