@@ -72,7 +72,7 @@ packages <- c(
 packages = packages[!(packages %in% installed.packages()[, "Package"])]
 
 if (length(packages)) {
-  install.packages(newPkg)
+  install.packages(packages)
 }
 
 ```
@@ -83,7 +83,7 @@ Then check that all required shiny-related packages are installed:
 packages <- c('shiny','shinyhelper','DT','shinydashboard')
 packages = packages[!(packages %in% installed.packages()[,"Package"])]
 if (length(packages)) {
-  install.packages(newPkg)
+  install.packages(packages)
 }
 ```
 

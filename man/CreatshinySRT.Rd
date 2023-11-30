@@ -20,7 +20,7 @@ CreatshinySRT(
 )
 }
 \arguments{
-\item{dat}{inported data for shinyspatial}
+\item{dat}{inported data for ShinySRT}
 
 \item{meta.to.include}{display the meta.data colnames}
 

@@ -4,7 +4,7 @@
 #' make a shiny app based on the spatial transcriptome
 #'
 #'
-#' @param dat inported data for shinyspatial
+#' @param dat inported data for ShinySRT
 #' @param meta.to.include display the meta.data colnames
 #' @param maxlevel maximum number of levels allowed for categorical metadata.
 #'  maximum number of levels allowed for categorical metadata.
