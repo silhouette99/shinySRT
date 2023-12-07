@@ -1,4 +1,4 @@
-#' server code prepared for shinyspatial
+#' server code prepared for shinySRT
 #'
 #'
 #' @param shiny.dir specify directory to create the shiny app in. Default is

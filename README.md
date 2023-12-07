@@ -99,13 +99,13 @@ library(SeuratData)
 InstallData("stxBrain")
 brain <- LoadData("stxBrain"， type = "anterior1")
 
-CreatshinySRT(brain,title = 'shinySRT exmaple')
+CreateshinySRT(brain,title = 'shinySRT exmaple')
 
 # SpatialExperiment
 library(SpatialExperiment)
 example(read10xVisium, echo = FALSE)
 
-CreatshinySRT(spe,title = 'shinySRT exmaple',gex.assay = 'counts')
+CreateshinySRT(spe,title = 'shinySRT exmaple',gex.assay = 'counts')
 
 # run shiny app
 shiny::runApp('shinyspatial_app/')
@@ -118,7 +118,7 @@ The SRT was processed using scanpy to obtain the h5ad file, while the following 
 
 ``` r
 # h5ad
-CreatshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
+CreateshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
 
 # run shiny app
 shiny::runApp('shinyspatial_app/')

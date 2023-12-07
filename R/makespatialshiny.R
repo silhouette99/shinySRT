@@ -4,7 +4,7 @@
 #' make a shiny app based on the spatial transcriptome
 #'
 #'
-#' @param dat inported data for ShinySRT
+#' @param dat inported data for shinySRT
 #' @param meta.to.include display the meta.data colnames
 #' @param maxlevel maximum number of levels allowed for categorical metadata.
 #'  maximum number of levels allowed for categorical metadata.
@@ -43,7 +43,7 @@
 #'
 #'
 #' @examples
-#' CreatshinySRT(
+#' CreateshinySRT(
 #' dat,
 #' meta.to.include = NA,
 #' maxlevel = 50,
@@ -59,7 +59,7 @@
 #'
 #'
 #' @export
-CreatshinySRT <- function(dat,
+CreateshinySRT <- function(dat,
                           meta.to.include = NA,
                           maxlevel = 50,
                           shiny.dir = 'shinyspatial_app',

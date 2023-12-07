@@ -47,5 +47,7 @@ adata.write(results_file)
 ```
 
 ``` r
-CreatshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
+library(shinySRT)
+
+CreateshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
 ```

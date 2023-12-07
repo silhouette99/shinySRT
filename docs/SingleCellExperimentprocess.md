@@ -18,6 +18,8 @@ dat@colData <- dat@colData[,c("sample_name","tissue","imagerow","imagecol","Clus
 dir.create('sce')
 setwd('sce')
 
-CreatshinySRT(dat,title = 'single cell experiment',maxlevel = 20)
+library(shinySRT)
+
+CreateshinySRT(dat,title = 'single cell experiment',maxlevel = 20)
 
 ```

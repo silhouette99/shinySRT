@@ -18,7 +18,9 @@ spe2 <- SpatialExperiment::read10xVisium(
   load = TRUE
 )
 
+library(shinySRT)
+
 dir.create('spe')
 setwd('spe')
-CreatshinySRT(dat = spe2,title = 'spatial experiment',gex.assay = 'counts')
+CreateshinySRT(dat = spe2,title = 'spatial experiment',gex.assay = 'counts')
 ```

@@ -1,4 +1,4 @@
-#' ui code prepared for shinyspatial
+#' ui code prepared for shinySRT
 #'
 #'
 #'

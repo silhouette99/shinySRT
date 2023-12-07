@@ -8,7 +8,7 @@ options(Seurat.object.assay.version = "v5")
 library(future)
 plan("multisession", workers = 10)
 library(ggplot2)
-library(ShinySRT)
+library(shinySRT)
 
 vizgen.obj <- LoadVizgen(data.dir = "vizgen/", fov = "vizgene")
 
@@ -21,5 +21,5 @@ vizgen.obj <- FindClusters(vizgen.obj, resolution = 0.3)
 dir.create('shinySRT')
 setwd('shinySRT')
 
-CreatshinySRT(vizgen.obj,title = 'Seurat vizgene')
+CreateshinySRT(vizgen.obj,title = 'Seurat vizgene')
 ```
