@@ -1,16 +1,16 @@
 #' Prepare data files required for shiny app
 #'
 #' Generate data files required for shiny app.Six files will be generated,
-#' (1) shinyspatial config \code{meta_group.Rds}
+#' (1) shinySRT config \code{meta_group.Rds}
 #' (2) the gene mapping object config \code{genesets.Rds}
 #' (3) the gene expression \code{data.h5}
 #' (4) the spatial metadata \code{meta.Rds}
 #' (5) the defaults for the shiny app \code{df_select.Rds}
 #' (6) the spatial image \code{image.Rds}
 #' Note that both \code{preparedata_shinyspatial} and \code{prepare_code} functions are ran when
-#' running the wrapper function \code{makespashiny}.
+#' running the wrapper function \code{CreateshinySRT}.
 #'
-#' @param dat inported data for shinyspatial
+#' @param dat imported data for shinySRT
 #' @param meta.to.include display the meta.data colnames
 #' @param maxlevel maximum number of levels allowed for categorical metadata.
 #'  maximum number of levels allowed for categorical metadata.
@@ -18,7 +18,7 @@
 #'   to create a new directory named "shinyspatial_app"
 #' @param chunkSize number of genes written to h5file at any one time. Lower
 #'   this number to reduce memory consumption. Should not be less than 10
-#' @param gex.assay assay in single-cell data object to use for plotting
+#' @param gex.assay assay in spatially resolved transcriptomic data object to use for plotting
 #'   gene expression, which must match one of the following:
 #'   \itemize{
 #'     \item{Seurat objects}: "RNA" or "integrated" assay,
@@ -49,7 +49,7 @@
 #'
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment
+#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat
 #'
 #'
 #' @examples
@@ -78,8 +78,8 @@ preparedata_shinyspatial <- function(dat,
                                      default.gene2 = NA,
                                      default.multigene = NA
 ){
-  drExist = TRUE
-  dmExist = TRUE
+  drExist = TRUE # image array
+  dmExist = TRUE # dim matrix
   
   if (class(dat)[1] == "Seurat") {
     ## get the image array and coordination matrix
@@ -90,10 +90,11 @@ preparedata_shinyspatial <- function(dat,
       drExist = FALSE
     }
     if (!drExist) {
-      stop(paste0("ShinySpatial did not detect any coordination data"))
+      stop(paste0("shinSRT did not detect any coordination data"))
     }
     
-    if (class(dat@images[[1]])[[1]] == 'FOV') {
+    
+    if (class(dat@images[[1]])[[1]] == 'FOV') { ## vizgene
       image <- dat@images
       #
       # for (i in names(image)) {
@@ -125,7 +126,7 @@ preparedata_shinyspatial <- function(dat,
       
       names(coordi) <- NULL
       coordi <- do.call(rbind, coordi)
-    } else if (class(dat@images[[1]])[[1]] == 'VisiumV1') {
+    } else if (class(dat@images[[1]])[[1]] == 'VisiumV1') { ## visium
       image <- dat@images
       ### seurat spot coordination are needed to flip
       coordi <- lapply(names(image), function(x) {
@@ -133,6 +134,8 @@ preparedata_shinyspatial <- function(dat,
         coordi$slice_sample <- x
         xrange <- c(0, dim(image[[x]])[2])
         yrange <- c(0, dim(image[[x]])[1])
+        
+        ## Image Orientation
         coordi$imagerow <-
           (yrange[2] - yrange[1]) / 2 - (coordi$imagerow - (yrange[2] - yrange[1]) / 2)
         return(coordi)
@@ -159,7 +162,7 @@ preparedata_shinyspatial <- function(dat,
     if (!dmExist) {
       warning(
         paste0(
-          "ShinySpatial did not detect any dimension reduction data \n",
+          "shinySRT did not detect any dimension reduction data \n",
           "       e.g. umap / tsne. Has any analysis been performed?"
         )
       )
@@ -169,7 +172,7 @@ preparedata_shinyspatial <- function(dat,
       drExist = FALSE
     }
     if (!drExist) {
-      stop(paste0("ShinySpatial did not detect any coordination data"))
+      stop(paste0("shinySRT did not detect any coordination data"))
     }
     
     ima <- lapply(dat@metadata$image$grob, function(x) {
@@ -221,7 +224,7 @@ preparedata_shinyspatial <- function(dat,
     if (!dmExist) {
       warning(
         paste0(
-          "ShinySpatial did not detect any dimension reduction data \n",
+          "shinySRT did not detect any dimension reduction data \n",
           "       e.g. umap / tsne. Has any analysis been performed?"
         )
       )
@@ -231,7 +234,7 @@ preparedata_shinyspatial <- function(dat,
       drExist = FALSE
     }
     if (!drExist) {
-      stop(paste0("ShinySpatial did not detect any coordination data"))
+      stop(paste0("shinySRT did not detect any coordination data"))
     }
     
     ima <- dat@int_metadata$imgData$data
@@ -308,7 +311,7 @@ preparedata_shinyspatial <- function(dat,
     if (!dmExist) {
       warning(
         paste0(
-          "ShinySpatial did not detect any dimension reduction data \n",
+          "shinySRT did not detect any dimension reduction data \n",
           "       e.g. umap / tsne. Has any analysis been performed?"
         )
       )
@@ -318,7 +321,7 @@ preparedata_shinyspatial <- function(dat,
       drExist = FALSE
     }
     if (!drExist) {
-      stop(paste0("ShinySpatial did not detect any coordination data"))
+      stop(paste0("shinySRT did not detect any coordination data"))
     }
     
     ima <- dat[['image']]
@@ -351,7 +354,7 @@ preparedata_shinyspatial <- function(dat,
     if (!dmExist) {
       warning(
         paste0(
-          "ShinySpatial did not detect any dimension reduction data \n",
+          "shinySRT did not detect any dimension reduction data \n",
           "       e.g. umap / tsne. Has any analysis been performed?"
         )
       )
@@ -361,7 +364,7 @@ preparedata_shinyspatial <- function(dat,
       drExist = FALSE
     }
     if (!drExist) {
-      stop(paste0("ShinySpatial did not detect any coordination data"))
+      stop(paste0("shinySRT did not detect any coordination data"))
     }
     
     meta <- lapply(obj[['obs']]$names, function(i){
@@ -437,7 +440,7 @@ preparedata_shinyspatial <- function(dat,
     if (!dmExist) {
       warning(
         paste0(
-          "ShinySpatial did not detect any dimension reduction data \n",
+          "shinySRT did not detect any dimension reduction data \n",
           "       e.g. umap / tsne. Has any analysis been performed?"
         )
       )
