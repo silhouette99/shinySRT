@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_code_server.R
 \name{lib_server}
 \alias{lib_server}
-\title{server code prepared for shinyspatial}
+\title{server code prepared for shinySRT}
 \usage{
 lib_server()
 }
@@ -16,5 +16,5 @@ lib_server : load package in ui scirpts}
 data files required for shiny app
 }
 \description{
-server code prepared for shinyspatial
+server code prepared for shinySRT
 }

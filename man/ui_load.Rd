@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_code_ui.R
 \name{ui_load}
 \alias{ui_load}
-\title{ui code prepared for shinyspatial}
+\title{ui code prepared for shinySRT}
 \usage{
 ui_load()
 }
@@ -16,5 +16,5 @@ ui_head : with web's header and menu}
 data files required for shiny app
 }
 \description{
-ui code prepared for shinyspatial
+ui code prepared for shinySRT
 }
