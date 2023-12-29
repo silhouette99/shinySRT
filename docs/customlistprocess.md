@@ -6,6 +6,7 @@ library(png)
 library(SPATA2)
 library(shinySRT)
 
+## eg. SPATA2 obj
 dat <- readRDS('313_T.RDS')
 dat <- SPATA2::updateSpataObject(dat)
 
@@ -21,6 +22,11 @@ coordinates <- lapply(names(coordinates), function(x) {
   cos <- coordinates[[x]]%>%as.data.frame()
   rownames(cos) <- paste(names(coordinates), cos$barcodes, sep = '_')
   cos <- cos[,-1]
+  
+  colnames(cos) <- c('y','x')
+  cos <- cos[c(2,1)]
+  ## convert x direction
+  cos$x <- ncol(image[[x]]) - cos$x
   cos
 })
 

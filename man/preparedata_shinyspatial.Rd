@@ -19,7 +19,7 @@ preparedata_shinyspatial(
 )
 }
 \arguments{
-\item{dat}{inported data for shinyspatial}
+\item{dat}{imported data for shinySRT}
 
 \item{meta.to.include}{display the meta.data colnames}
 
@@ -31,7 +31,7 @@ maximum number of levels allowed for categorical metadata.}
 \item{chunkSize}{number of genes written to h5file at any one time. Lower
 this number to reduce memory consumption. Should not be less than 10}
 
-\item{gex.assay}{assay in single-cell data object to use for plotting
+\item{gex.assay}{assay in spatially resolved transcriptomic data object to use for plotting
 gene expression, which must match one of the following:
 \itemize{
 \item{Seurat objects}: "RNA" or "integrated" assay,
@@ -61,14 +61,14 @@ show in bubbleplot / heatmap}
 }
 \description{
 Generate data files required for shiny app.Six files will be generated,
-(1) shinyspatial config \code{meta_group.Rds}
+(1) shinySRT config \code{meta_group.Rds}
 (2) the gene mapping object config \code{genesets.Rds}
 (3) the gene expression \code{data.h5}
 (4) the spatial metadata \code{meta.Rds}
 (5) the defaults for the shiny app \code{df_select.Rds}
 (6) the spatial image \code{image.Rds}
 Note that both \code{preparedata_shinyspatial} and \code{prepare_code} functions are ran when
-running the wrapper function \code{makespashiny}.
+running the wrapper function \code{CreateshinySRT}.
 }
 \examples{
 preparedata_shinyspatial(dat,

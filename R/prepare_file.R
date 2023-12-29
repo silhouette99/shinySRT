@@ -49,7 +49,7 @@
 #'
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat
+#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment
 #'
 #'
 #' @examples
@@ -136,8 +136,8 @@ preparedata_shinyspatial <- function(dat,
         yrange <- c(0, dim(image[[x]])[1])
         
         ## Image Orientation
-        coordi$imagerow <-
-          (yrange[2] - yrange[1]) / 2 - (coordi$imagerow - (yrange[2] - yrange[1]) / 2)
+        # coordi$imagerow <-
+        #   (yrange[2] - yrange[1]) / 2 - (coordi$imagerow - (yrange[2] - yrange[1]) / 2)
         return(coordi)
       })
       names(coordi) <- NULL
@@ -207,8 +207,8 @@ preparedata_shinyspatial <- function(dat,
       xrange <- c(0, dim(ima[[names(ima)[x]]])[2])
       yrange <- c(0, dim(ima[[names(ima)[x]]])[1])
       
-      coordi_$imagerow <-
-        (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
+      # coordi_$imagerow <-
+      #   (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
       return(coordi_)
     })
     names(coordi) <- NULL
@@ -294,8 +294,8 @@ preparedata_shinyspatial <- function(dat,
       xrange <- c(0, dim(ima[[x]])[2])
       yrange <- c(0, dim(ima[[x]])[1])
       
-      coordi_$imagerow <-
-        (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
+      # coordi_$imagerow <-
+      #   (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
       return(coordi_)
     })
     names(coordi) <- NULL
@@ -416,8 +416,8 @@ preparedata_shinyspatial <- function(dat,
       xrange <- c(0, dim(ima[[x]])[2])
       yrange <- c(0, dim(ima[[x]])[1])
       
-      coordi_$imagerow <-
-        (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
+      # coordi_$imagerow <-
+      #   (yrange[2] - yrange[1]) / 2 - (coordi_$imagerow - (yrange[2] - yrange[1]) / 2)
       return(coordi_)
     })
     names(coordi) <- NULL
@@ -758,10 +758,10 @@ preparedata_shinyspatial <- function(dat,
       colnames(dat) = paste0("cell_", seq(ncol(dat)))
     }
     if (is.na(gex.assay[1])) {
-      if(length(grep(pattern = 'logcounts', assayNames(dat))) > 0){
+      if(length(grep(pattern = 'logcounts', SummarizedExperiment::assayNames(dat))) > 0){
         gex.assay = "logcounts"
       }else{
-        gex.assay = assayNames(dat)[1]
+        gex.assay = SummarizedExperiment::assayNames(dat)[1]
       }
 
     }
@@ -770,17 +770,22 @@ preparedata_shinyspatial <- function(dat,
                                                      gex.assay[1]))
     gex.colnm = paste(dat@colData[[slice_samples]], colnames(SummarizedExperiment::assay(dat,
                                                                                          gex.assay[1])),sep = '_')
-    defGenes = gex.rownm[1:10]
+    
+    mtx <- SummarizedExperiment::assay(dat, gex.assay[1]) %>% MatrixGenerics::rowMeans2()
+    names(mtx) <- gex.rownm
+    mtx <- mtx[order(mtx,decreasing = T)]
+    defGenes = names(mtx)[100:110]
+    
   }  else if (class(dat)[1] == "SingleCellExperiment") {
     if (is.null(colnames(dat)[1])) {
       colnames(dat) = paste0("cell_", seq(ncol(dat)))
     }
 
     if (is.na(gex.assay[1])) {
-      if(length(grep(pattern = 'logcounts', assayNames(dat))) > 0){
+      if(length(grep(pattern = 'logcounts', SummarizedExperiment::assayNames(dat))) > 0){
         gex.assay = "logcounts"
       }else{
-        gex.assay = assayNames(dat)[1]
+        gex.assay = SummarizedExperiment::assayNames(dat)[1]
       }
 
     }
@@ -789,13 +794,22 @@ preparedata_shinyspatial <- function(dat,
                                                      gex.assay[1]))
     gex.colnm = paste(dat@colData[[slice_samples]], colnames(SummarizedExperiment::assay(dat,
                                                                                          gex.assay[1])),sep = '_')
-    defGenes = gex.rownm[1:10]
+    # defGenes = gex.rownm[1:10]
+    mtx <- SummarizedExperiment::assay(dat, gex.assay[1]) %>% MatrixGenerics::rowMeans2()
+    names(mtx) <- gex.rownm
+    mtx <- mtx[order(mtx,decreasing = T)]
+    defGenes = names(mtx)[100:110]
     
   } else if (class(dat)[1] == "list") {
     gex.matdim = dim(dat[['data']])
     gex.rownm = rownames(dat[['data']])
     gex.colnm = colnames(dat[['data']])
-    defGenes = gex.rownm[1:10]
+    mtx <- dat[['data']] %>% rowMeans2()
+    names(mtx) <- gex.rownm
+    mtx <- mtx[order(mtx,decreasing = T)]
+    defGenes = names(mtx)[100:110]
+    
+    # defGenes = gex.rownm[1:10]
   } else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
     if (is.na(gex.assay[1])) {
