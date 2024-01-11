@@ -7,6 +7,7 @@
 CreateshinySRT(
   dat,
   meta.to.include = NA,
+  tooltip_col = NULL,
   maxlevel = 50,
   shiny.dir = "shinyspatial_app",
   title = "spatial_example",
@@ -14,6 +15,11 @@ CreateshinySRT(
   gex.assay = NA,
   gex.slot = c("data", "scale.data", "counts"),
   gene.mapping = TRUE,
+  scmtx = NULL,
+  scmeta = NULL,
+  normalize = T,
+  colcluster = NULL,
+  sp_cols = NULL,
   default.gene1 = NA,
   default.gene2 = NA,
   default.multigene = NA

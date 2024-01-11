@@ -44,7 +44,8 @@ ui_head <- function(title){
     '      menuItem(\"GeneExpr vs GeneExpr\",tabName = \"d_gene_ex\",icon = icon(\"sun\")),\n',
     '      menuItem(\"Viol / Box data chart\",tabName = \"vio\",icon = icon(\"desktop\")),\n',
     '      menuItem(\"Portion chart\", tabName = \"portion\", icon = icon(\"bars\")),\n',
-    '      menuItem(\"Heat / Dot plot\", tabName = \"heatdot\", icon = icon(\"gear\"))),\n',
+    '      menuItem(\"Heat / Dot plot\", tabName = \"heatdot\", icon = icon(\"gear\")),\n',
+    '      menuItem(\"Deconvolusion\", tabName = \"deconv\", icon = icon(\"flag\"))),\n',
     '    ### import new spot information\n',
     '    shiny::selectizeInput(inputId = \"new_title\",\n',
     '      label = \'group name\',choices = NULL,\n',
@@ -177,7 +178,7 @@ ui_p1 <- function(df_select){
     ft_for <- paste('fluidRow(\n',ft_for)
   }) %>% unlist()%>%paste(collapse = '')
   ft_for <- paste(ft_for,'         br(),br()))),\n',sep = '')
-  ui_p1 <- paste(ui_p1_head,bg_for,ft_for)%>%glue::glue()
+  ui_p1 <- paste0(ui_p1_head,bg_for,ft_for,'\n\n')%>%glue::glue()
   return(ui_p1)
 }
 
@@ -300,7 +301,7 @@ ui_p2 <- function(df_select) {
   }) %>% unlist() %>% paste(collapse = '')
   co_for <- paste(co_for, ')))),\n\n', sep = '')
   
-  ui_p2 <- paste(ui_p2_head,bg_for,coex_leg,co_for,sep = '')%>%glue::glue()
+  ui_p2 <- paste0(ui_p2_head,bg_for,coex_leg,co_for,'\n\n')%>%glue::glue()
   return(ui_p2)
 }
 
@@ -401,7 +402,7 @@ ui_p3 <- function(df_select){
     }
     
   }) %>% unlist()%>%paste(collapse = '')
-  ui_p3 <- paste(ui_p3_head,'fluidRow(column(12,\n',bg_for,'))\n','))),',sep = '')
+  ui_p3 <- paste0(ui_p3_head,'fluidRow(column(12,\n',bg_for,'))\n','))),','\n\n')
   return(ui_p3)
 }
 
@@ -500,7 +501,7 @@ ui_p4 <- function(df_select){
     }
   }) %>% unlist() %>% paste(collapse = '')
   bg_for <- paste('fluidRow(column(12,\n', bg_for, '))))),',sep = '')       
-  ui_p4 <- paste(ui_p4_head,bg_for,sep = '')%>%glue::glue()
+  ui_p4 <- paste0(ui_p4_head,bg_for,'\n\n')%>%glue::glue()
   return(ui_p4)
 }  
 
@@ -599,10 +600,217 @@ ui_p5 <- function(df_select){
     }
   }) %>% unlist() %>% paste(collapse = '')
   
-  bg_for <- paste(bg_for, '))))))',sep = '')       
-  ui_p5 <- paste(ui_p5_head,bg_for,sep = '')%>%glue::glue()
+  if(length(df_select$cell) > 0){
+    bg_for <- paste(bg_for, '))),\n\n',sep = '')
+  }else{
+    bg_for <- paste(bg_for, ')))\n\n',sep = '')
+  }
+  
+         
+  ui_p5 <- paste0(ui_p5_head,bg_for,'\n\n')%>%glue::glue()
   
   return(ui_p5)
+}
+
+
+## page6
+ui_p6 <- function(df_select){
+  ui_p6_head <- paste0(
+    '   tabItem(tabName = \'deconv\',h2(strong(HTML(\"Deconvolusion\"))),\n',
+    '    h4(\"Cellular Composition of Spots in the area\"),\n',
+    '    \"In this tab, users can visualise both Spot information and cellular \",\n',
+    '    \"composition on slice spatial representions.\",br(),br(),\n',
+    '    fluidRow(column(12,fluidRow(column(6, br(), br(), br(), fluidRow(column(4,\n',
+    '     shiny::selectizeInput(inputId = \"de_bg\",\n',
+    '       label = \'select group\',choices = meta_group[info == T, group],\n',
+    '       selected = df_select$meta1,multiple = FALSE,\n',
+    '       options = list(create = TRUE)),\n',
+    '     shiny::selectizeInput(inputId = \"celltyps\",\n',
+    '       label = \'select cell type\',choices = df_select$cell,\n',
+    '       selected = df_select$cell,multiple = FALSE,\n',
+    '       options = list(create = TRUE)))),br(),br(),br(), \n',
+    '     fluidRow(box(title = \'Cellular component Statistical table\',width = 12,\n',
+    '      collapsed = F,align = \"center\",status = \"primary\",\n',
+    '      solidHeader = TRUE,collapsible = TRUE,\n',
+    '      DTOutput(outputId = \'statis_deconv\')))),\n',
+    '      tabBox(title = \'Chart\',selected = \'Pie\',width = 6,\n',
+    '      tabPanel(\'Pie\',ggiraph::girafeOutput(outputId = \'de_pie_plot\', height = 500),\n',
+    '         fluidRow(column(6,br(),downloadButton(\"de_pie_plot.pdf\", \"Download PDF\"),downloadButton(\"de_pie_plot.png\", \"Download PNG\")),\n',
+    '          column(6,\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_pie_plot.h\",\"PDF / PNG height:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 6,step = 0.5)),\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_pie_plot.w\",\"PDF / PNG width:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 12,step = 0.5))\n',
+    '            ))),\n',
+    '      tabPanel(\'Vln\',ggiraph::girafeOutput(outputId = \'de_vln_plot\', height = 500),\n',
+    '         fluidRow(column(6,br(),downloadButton(\"de_vln_plot.pdf\", \"Download PDF\"),downloadButton(\"de_vln_plot.png\", \"Download PNG\")),\n',
+    '          column(6,\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_vln_plot.h\",\"PDF / PNG height:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 6,step = 0.5)),\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_vln_plot.w\",\"PDF / PNG width:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 12,step = 0.5))\n',
+    '            ))),\n',
+    '      tabPanel(\'Den\',ggiraph::girafeOutput(outputId = \'de_den_plot\', height = 500),\n',
+    '         fluidRow(column(6,br(),downloadButton(\"de_den_plot.pdf\", \"Download PDF\"),downloadButton(\"de_den_plot.png\", \"Download PNG\")),\n',
+    '          column(6,\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_den_plot.h\",\"PDF / PNG height:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 6,step = 0.5)),\n',
+    '            div(style = \"display:inline-block\",\n',
+    '            numericInput(\"de_den_plot.w\",\"PDF / PNG width:\",\n',
+    '             width = \"138px\",min = 4,max = 20,value = 12,step = 0.5))\n',
+    '            ))))),\n'
+  )
+  
+  slices <- length(unique(df_select$slice))
+  if(slices <= 4){
+    nr = 1
+    if(slices <= 2){
+      nc = 6
+    }else{
+      nc = 12/slices
+    }
+  }else{
+    nr = ceiling(slices/4)
+    nc = 3
+  }
+  
+  de_for <- lapply(1:nr, function(l){
+    eachr <- 1:4+4*(l-1)
+    eachr <- eachr[eachr <= slices]
+    de_for <- lapply(eachr, function(eachc){
+      if(eachc == max(eachr)){
+        m =')' 
+      }else{
+        m = ','
+      }
+      glue::glue(
+        '         column({nc},style = \"border-right: 2px solid black\",\n',
+        '           box(title = paste(unique(df_select$slice)[{eachc}], \'group\'),\n',
+        '            collapsed = F,width = 12,\n',
+        '            align = \"center\",status = \"primary\",\n',
+        '            solidHeader = TRUE,collapsible = TRUE,\n',
+        '            shiny::plotOutput(outputId = \'de_pct_spot{eachc}\',\n',
+        '             height = df_select$image_size)),\n',
+        '           fluidRow(column(6,br(),\n',
+        '             downloadButton(\"de_pct_spot{eachc}.pdf\", \"Download PDF\"),\n',
+        '             downloadButton(\"de_pct_spot{eachc}.png\", \"Download PNG\")),\n',
+        '             column(6,\n',
+        '              div(style = \"display:inline-block\",\n',
+        '                numericInput(\"de_pct_spot{eachc}.h\",\n',
+        '                  \"PDF / PNG height:\",width = \"138px\",\n',
+        '                  min = 4,max = 20,value = 6,step = 0.5)),\n',
+        '              div(style = \"display:inline-block\",\n',
+        '                numericInput(\"de_pct_spot{eachc}.w\",\n',
+        '                  \"PDF / PNG width:\", width = \"138px\",\n',
+        '                  min = 4,max = 20,value = 12,step = 0.5))))){m}\n\n',
+      )
+    }) %>% unlist()%>%paste(collapse = '')
+    
+    if(l == nr){
+      nt = '' 
+    }else{
+      nt = ','
+    }
+    
+    de_for <- paste('fluidRow(\n',de_for,nt,sep = '')
+  }) %>% unlist()%>%paste(collapse = '') 
+  pct_ <- paste0('fluidRow(\n',
+                 ' tabBox(title = \'Spatial plot\',\n',
+                 '  width = 12,selected = \'PCT\',\n',
+                 '  tabPanel(\'PCT\',\n')
+  de_for <- paste(pct_,de_for,'),\n\n',sep = '')
+  
+  
+  sc_for <- lapply(1:nr, function(l){
+    eachr <- 1:4+4*(l-1)
+    eachr <- eachr[eachr <= slices]
+    
+    sc_for <- lapply(eachr, function(eachc){
+      if(eachc == max(eachr)){
+        m =')' 
+      }else{
+        m = ','
+      }
+      
+      glue::glue(
+        '         column({nc},style = \"border-right: 2px solid black\",\n',
+        '         box(title = paste(unique(df_select$slice)[{eachc}], \'group\'),\n',
+        '          collapsed = F,width = 12,\n',
+        '          align = \"center\",status = \"primary\",\n',
+        '          solidHeader = TRUE,collapsible = TRUE,\n',
+        '          ggiraph::girafeOutput(outputId = \'de_sco_spot{eachc}\',\n',
+        '           height = df_select$image_size)),\n',
+        '         fluidRow(column(6,br(),\n',
+        '           downloadButton(\"de_sco_spot{eachc}.pdf\", \"Download PDF\"),\n',
+        '           downloadButton(\"de_sco_spot{eachc}.png\", \"Download PNG\")),\n',
+        '           column(6,\n',
+        '            div(style = \"display:inline-block\",\n',
+        '              numericInput(\"de_sco_spot{eachc}.h\",\n',
+        '                \"PDF / PNG height:\",width = \"138px\",\n',
+        '                min = 4,max = 20,value = 6,step = 0.5)),\n',
+        '            div(style = \"display:inline-block\",\n',
+        '              numericInput(\"de_sco_spot{eachc}.w\",\n',
+        '                \"PDF / PNG width:\",width = \"138px\",\n',
+        '                min = 4,max = 20,value = 12,step = 0.5))))){m}\n\n'
+      )
+      
+    }) %>% unlist()%>%paste(collapse = '')
+    
+    if(l == nr){
+      nt = '' 
+    }else{
+      nt = ','
+    }
+    
+    sc_for <- paste('fluidRow(\n',sc_for,nt,sep = '')
+  }) %>% unlist() %>% paste(collapse = '') 
+  
+  sc_ <- paste0('  tabPanel(\'score\',\n')
+  sc_for <- paste(sc_,sc_for,'))),\n\n',sep = '')
+  
+  rs <- paste0('     fluidRow(column(2,shiny::actionButton(inputId = \"reset6\",\n',
+               '      icon = icon(\"refresh\"),label = \"reset all\"))),br(),\n')
+  
+  
+  bg_for <- lapply(1:nr, function(l){
+    eachr <- 1:4+4*(l-1)
+    eachr <- eachr[eachr <= slices]
+    
+    bg_for <- lapply(eachr, function(eachc){
+      if(eachc == max(eachr)){
+        m =')' 
+      }else{
+        m = ','
+      }
+      
+      glue::glue(
+        ' column({nc},style = \"border-right: 2px solid black\",\n',
+        ' box(title = paste(unique(df_select$slice)[{eachc}], \'group\'),\n',
+        '  collapsed = F,width = 12,align = \"center\",status = \"primary\",\n',
+        '  solidHeader = TRUE,collapsible = TRUE,\n',
+        '  ggiraph::girafeOutput(outputId = \'de_bg_spot{eachc}\',\n',
+        '   height = df_select$image_size)),\n',
+        ' ){m}\n\n'
+      )
+      
+    }) %>% unlist()%>%paste(collapse = '')
+    
+    if(l == nr){
+      nt = '' 
+    }else{
+      nt = ','
+    }
+    bg_for <- paste('fluidRow(\n',bg_for,nt,sep = '')
+  }) %>% unlist() %>% paste(collapse = '') 
+  bg_for <- paste(bg_for,')))\n\n',sep = '')
+  
+  ui_p6 <- paste0(ui_p6_head, de_for, sc_for, rs, bg_for, '\n\n')
+  return(ui_p6)
 }
 
 

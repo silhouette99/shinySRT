@@ -18,4 +18,10 @@ Depends:
     glue,
     hdf5r,
     readr,
-    reticulate
+    reticulate,
+    scran,
+    quadprog,
+    SummarizedExperiment,
+    Rfast,
+    Seurat
+    

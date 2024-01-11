@@ -41,6 +41,12 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   readr::write_file(sp_server_p4(df_select = df_select),file = filename,append = T)
   readr::write_file(sp_server_p5(df_select = df_select),file = filename,append = T)
   
+  if(length(grep(pattern = 'deconvolusion',dir(shiny.dir),value = T)) > 0){
+    readr::write_file(sp_server_p6(df_select = df_select),file = filename,append = T)
+  }else{
+    readr::write_file('}',file = filename,append = T)
+  }
+  
   ##
   filename = paste0(shiny.dir, "/ui.R")
   readr::write_file(ui_load(), file = filename)
@@ -65,6 +71,12 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   readr::write_file(ui_p4(df_select = df_select), file = filename,append = T)
   ## page5
   readr::write_file(ui_p5(df_select = df_select), file = filename,append = T)
+  ## page6
+  if(!is.null(df_select[['cell']])){
+    readr::write_file(ui_p6(df_select = df_select), file = filename,append = T)
+  }
+  
+  readr::write_file(glue::glue(')))'), file = filename,append = T)
 }
 
 

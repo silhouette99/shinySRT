@@ -49,7 +49,7 @@
 #'
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment
+#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment scran
 #'
 #'
 #' @examples
@@ -68,12 +68,18 @@
 #' @export
 preparedata_shinyspatial <- function(dat,
                                      meta.to.include = NA,
+                                     tooltip_col = NULL,
                                      maxlevel = 50,
                                      shiny.dir = 'shinyspatial_app',
                                      chunkSize = 500,
                                      gex.assay = NA,
                                      gex.slot = c("data", "scale.data","counts"),
                                      gene.mapping = TRUE,
+                                     scmtx = NULL,
+                                     scmeta = NULL,
+                                     normalize = T,
+                                     colcluster = NULL,
+                                     sp_cols = NULL,
                                      default.gene1 = NA,
                                      default.gene2 = NA,
                                      default.multigene = NA
@@ -1005,21 +1011,134 @@ preparedata_shinyspatial <- function(dat,
   names(ranges) <- names(ima)
   
   
-  coordi$tooltip <- paste(
-    'sampleID: ',
-    coordi$sampleID,
-    '\n',
-    'slice :',coordi$slice_sample,
-    '\n',
-    meta_group[default == 1 &
-                 info == TRUE]$group,
-    ': ',
-    coordi[[meta_group[default == 1 & info == TRUE]$group]],
-    meta_group[default == 2 &
-                 info == TRUE]$group,'\n',
-    ': ',
-    coordi[[meta_group[default == 2 & info == TRUE]$group]]
-  )
+  ## spot lab
+  if (length(intersect(tooltip_col, colnames(coordi))) == 0 |
+      length(intersect(tooltip_col, meta_group[default == 1 &
+                                               info == TRUE]$group)) > 0 |
+      length(intersect(tooltip_col, meta_group[default == 2 &
+                                               info == TRUE]$group) > 0)) {
+    coordi$tooltip <- paste(
+      'sampleID: ',
+      coordi$sampleID,
+      '\n',
+      'slice :',
+      coordi$slice_sample,
+      '\n',
+      meta_group[default == 1 &
+                   info == TRUE]$group,
+      ': ',
+      coordi[[meta_group[default == 1 & info == TRUE]$group]],'\n',
+      meta_group[default == 2 &
+                   info == TRUE]$group,
+      ': ',
+      coordi[[meta_group[default == 2 & info == TRUE]$group]]
+    )
+    
+  } else{
+    coordi$tooltip <- paste(
+      'sampleID: ',
+      coordi$sampleID,
+      '\n',
+      'slice :',
+      coordi$slice_sample,
+      '\n',
+      meta_group[default == 1 &
+                   info == TRUE]$group,
+      ': ',
+      coordi[[meta_group[default == 1 & info == TRUE]$group]],
+      '\n',
+      meta_group[default == 2 &
+                   info == TRUE]$group,
+      ': ',
+      coordi[[meta_group[default == 2 & info == TRUE]$group]],
+      '\n',
+      tooltip_col,
+      ' :',
+      coordi[[tooltip_col]]
+    )
+  }
+  
+  
+  ## deconvolusion
+  if(!is.null(scmtx) & !is.null(scmeta)){
+    if(normalize){
+      mtx <- scran_norm(mymatrix = scmtx)
+    }
+    if(length(intersect(colcluster, colnames(scmeta))) == 0){
+      stop('Do not definate the scmeta colums')
+    }else{
+      varg <- scran_hvg(mtx = mtx,meta = scmeta,colcluster = colcluster)
+    }
+    
+    sign_gene <- varg[, head(.SD, 10), by = "clusters"]
+    sign_matrix <-
+      DWLSmatrix(
+        matrix = mtx,
+        sign_gene = sign_gene$genes,
+        cell_cols = colcluster,
+        meta = scmeta
+      )
+  }
+  
+  
+  if(!is.null(scmtx) & !is.null(scmeta) & length(intersect(colcluster, colnames(scmeta))) > 0){
+    if (class(dat)[1] == "Seurat") {
+      sp_mtx <- slot(dat@assays[[gex.assay[1]]],
+                     gex.slot[1])
+      if (gex.slot[1] == 'counts') {
+        sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      }
+      
+    } else if (class(dat)[1] == "SpatialExperiment" |
+               class(dat)[1] == "SingleCellExperiment") {
+      sp_mtx <- SummarizedExperiment::assay(dat, gex.assay[1])
+      if(gex.slot[1] == 'counts'){
+        sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      }
+      
+    } else if (class(dat)[1] == 'list') {
+      if(!dat$normalize){
+        sp_mtx <- dat[['data']]
+      }
+      
+    } else if (tolower(tools::file_ext(dat)) == "h5ad") {
+      obj <- hdf5r::H5File$new(dat, mode = "r")
+      sp_mtx <- rep(NA, length(gex.colnm) * length(gex.rownm))
+      sp_mtx[obj[['X']][['indices']]$read()] <-
+        obj[['X']][['data']]$read()
+      sp_mtx[which(is.na(sp_mtx))] <- 0
+      sp_mtx <- matrix(sp_mtx, nrow = length(gex.colnm)) %>% t()
+      rownames(sp_mtx) <- gex.rownm
+      colnames(sp_mtx) <- gex.colnm
+      sp_mtx <- as(sp_mtx,'dgCMatrix')
+    }
+    
+    if(sum(grepl("^ENSG000", gex.rownm)) > 0 & sum(grepl("^ENSMUSG000",gex.rownm)) > 0){
+      if (sum(grepl("^ENSG000", gex.rownm)) >= sum(grepl("^ENSMUSG000",gex.rownm))) {
+        tmp1 = fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
+      } else {
+        tmp1 = fread(system.file("extdata",'mm_map.txt.gz',package = 'shinySRT'))
+      }
+      gene_mapping = tmp1$GeneName
+      names(gene_mapping) = tmp1$EnsemblID
+      
+      rownames(sp_mtx) <- gene_mapping[rownames(sp_mtx)]
+    }
+    
+    
+    de_tab <- runDWLSDeconv(
+      norm_mtx = sp_mtx,
+      cell_metadata = coordi,
+      cluster_column = sp_cols,
+      sign_matrix = sign_matrix
+    )
+    
+    de_tab <- cbind(coordi[,c(2:3,which(colnames(coordi) %in% meta_group[info == T]$group)),with = F], de_tab)
+  }else{
+    de_tab <- NULL
+  }
+  
+  
   
   
   df_select = list()
@@ -1035,11 +1154,19 @@ preparedata_shinyspatial <- function(dat,
   df_select$slice <- levels(coordi$slice_sample)
   df_select$image_size <- max(boxsize)
   
+  if(!is.null(de_tab)){
+    cells <- sapply(strsplit(grep(pattern = '^score_', colnames(de_tab), value = T),split = '_'),'[[',2)
+    df_select$cell <- cells
+  }
+  
   saveRDS(coordi, paste0(shiny.dir, '/meta.Rds'))
   saveRDS(meta_group, paste0(shiny.dir, '/meta_group.Rds'))
   saveRDS(genesets, paste0(shiny.dir, '/genesets.Rds'))
   saveRDS(df_select, paste0(shiny.dir, '/df_select.Rds'))
   saveRDS(ima, paste0(shiny.dir, '/image.Rds'))
+  if(!is.null(de_tab)){
+    saveRDS(de_tab, paste0(shiny.dir, '/deconvolusion.Rds'))
+  }
 }
 
 ## clusters colors displayed on shiny web
@@ -1101,4 +1228,4 @@ heat_col <- function(){
 #     asp = 1
 #   )
 # }
-## prepared shiny data
+

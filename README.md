@@ -1,6 +1,7 @@
 # shinySRT
 
 ---
+![](image/shinysrt.png)
 
 ## Description
 
@@ -75,7 +76,9 @@ pacman::p_load(
   'shiny',
   'shinyhelper',
   'DT',
-  'shinydashboard'
+  'shinydashboard',
+  'scran',
+  'scatterpie'
 )
 
 ```

@@ -41,6 +41,7 @@ lib_server <- function() {
     'library(ggtree)\n',
     'library(aplot)\n',
     'library(ggiraph)\n',
+    'library(scatterpie)\n',
     'library(ggpubr)\n\n',
   )
   return(lib)
@@ -76,6 +77,7 @@ data_server <- function() {
     'genesets <- readRDS(\'genesets.Rds\')\n',
     'df_select <- readRDS(\'df_select.Rds\')\n',
     'image <- readRDS(\'image.Rds\')\n',
+    'deconvolusion <- readRDS(\'deconvolusion.Rds\')\n',
     'data = \"data.h5\"\n',
     'meta$group <- NA\n\n\n'
   )
@@ -530,7 +532,7 @@ fun_server <- function() {
     '    groupby = \'No\',\n',
     '    plot_type = \'violin\',\n',
     '    highlight = NULL,\n',
-    '    pt_p = FALSE) {{\n',
+    '    pt_p = FALSE,ynames = NULL) {{\n',
     '  if (groupby == \'No\') {{\n',
     '    groups = NULL\n',
     '    cols <-\n',
@@ -566,7 +568,7 @@ fun_server <- function() {
     '    x = x,\n',
     '    y = y,\n',
     '    group = groups,\n',
-    '    plot = plot_type,\n',
+    '    plot = plot_type,ynames = ynames,\n',
     '    pt = pt_p\n',
     '  )\n',
     '}}\n',
@@ -575,7 +577,7 @@ fun_server <- function() {
     '                        y,\n',
     '                        group = NULL,\n',
     '                        plot = \'violin\',\n',
-    '                        cols = NULL,\n',
+    '                        cols = NULL,ynames = \'gene expression\',\n',
     '                        pt = FALSE) {{\n',
     '  if (is.null(group) | length(which(x == group)) >= 1) {{\n',
     '    if (!is.factor(tab_meta[[x]])) {{\n',
@@ -587,7 +589,7 @@ fun_server <- function() {
     '      names(cols) <- levels(tab_meta[[x]])\n',
     '    }}\n',
     '    \n',
-    '    tab_meta <- tab_meta[,c(colnames(tab_meta) %in% c(\'sampleID\',x,y)),with = F]\n',
+    '    tab_meta <- tab_meta[,c(\'sampleID\',x,y),with = F]\n',
     '    colnames(tab_meta)[which(colnames(tab_meta) %in% c(\'sampleID\',x, y))] <-\n',
     '      c(\'sampleID\',\'X\', \'Y\')\n',
     '    tooltip <- tab_meta %>% group_by(X) %>% summarize(\n',
@@ -702,7 +704,7 @@ fun_server <- function() {
     '      )\n',
     '    }}\n',
     '  }}\n',
-    '  p + xlab(x) + ylab(\'gene expression\') + labs(title = y)\n',
+    '  p + xlab(x) + ylab(ynames) + labs(title = y)\n',
     '}}\n',
     '### barplot\n',
     'tab_bar_plot <- function(tab_meta,\n',
@@ -1320,7 +1322,176 @@ fun_server <- function() {
     '    meta$pctExpress = 100 * meta$nExpress / meta$nCells\n',
     '    meta = meta[order(sub)]\n',
     '    colnames(meta)[3] = paste0(colnames(meta)[3], \"_\", gene)\n',
-    '    return(meta)}}\n\n'
+    '    return(meta)}}\n\n',
+    
+    'spatialdwls <- function(input_image,deconv,pie_scale = 0.4, score = NULL,pt.alpha = 0.7,pt_size = 0.8){{\n',
+    '  if (!is.null(input_image)) {{\n',
+    '    xrange <- c(25, dim(input_image)[2] - 25)\n',
+    '    yrange <- c(25, dim(input_image)[1] - 25)\n',
+    '  }} else{{\n',
+    '    xrange <-\n',
+    '      c(min(meta_slice$imagecol),\n',
+    '        max(meta_slice$imagecol))\n',
+    '    yrange <-\n',
+    '      c(min(meta_slice$imagerow),\n',
+    '        max(meta_slice$imagerow))\n',
+    '  }}\n',
+    '  if(class(input_image) == \'array\' | class(input_image) == \'raster\'){{\n',
+    '    grob <- grid::rasterGrob(input_image, width = grid::unit(1, \"npc\"),\n',
+    '                             height = grid::unit(1, \"npc\"))\n',
+    '    bg <- geom_spatial(data = tibble::tibble(grob = list(grob)), \n',
+    '                       aes(grob = grob), x = 0.5, y = 0.5)\n',
+    '    # bg <- ggpubr::background_image(input_image)\n',
+    '  }}else{{\n',
+    '    bg <- NULL\n',
+    '  }}\n',
+    '  if(!is.null(score)){{\n',
+    '    \n',
+    '    \n',
+    '    deconv$firm_lab <-\n',
+    '      paste0(\'sampleID: \', deconv[[\'sampleID\']], \'\\n\', strsplit(score,split = \'_\')[[1]][2], \': \', deconv[[score]], \'\\n\', \n',
+    '             \'PCT: \', deconv[[strsplit(score,split = \'_\')[[1]][2]]])\n',
+    '    \n',
+    '    gg_scatter <- ggplot(\n',
+    '      data = deconv,\n',
+    '      mapping = aes_string(\n',
+    '        x = \'imagecol\',\n',
+    '        y = \'imagerow\',\n',
+    '        color = score,\n',
+    '        # here we add iteractive aesthetics\n',
+    '        tooltip = \'firm_lab\',\n',
+    '        data_id = \'sampleID\'\n',
+    '      )\n',
+    '    )+bg + xlim(xrange) + ylim(rev(yrange)) + theme_classic() + theme(\n',
+    '      axis.line = element_blank(),\n',
+    '      axis.text = element_blank(),\n',
+    '      axis.ticks = element_blank(),\n',
+    '      axis.title = element_blank(),\n',
+    '      legend.position = \'top\'\n',
+    '    ) + geom_point_interactive(size = pt_size, alpha = pt.alpha) + scale_color_distiller(palette = \"Spectral\") + coord_fixed()\n',
+    '    \n',
+    '  }}else{{\n',
+    '    cells <- sapply(strsplit(grep(pattern = \'^score_\', colnames(deconv),value = T),split = \'_\'),\'[[\',2)\n',
+    '    # names(cells) <- col_box[1:length(grep(pattern = \'^score_\', colnames(deconv),value = T))]\n',
+    '    gg_scatter <- ggplot(\n',
+    '      data = deconv,\n',
+    '      mapping = aes_string(\n',
+    '        x = \'imagecol\',\n',
+    '        y = \'imagerow\'\n',
+    '      )\n',
+    '    )+bg + xlim(xrange) + ylim(rev(yrange)) + theme_classic() + theme(\n',
+    '      axis.line = element_blank(),\n',
+    '      axis.text = element_blank(),\n',
+    '      axis.ticks = element_blank(),\n',
+    '      axis.title = element_blank(),\n',
+    '      legend.position = \'top\',\n',
+    '      legend.key.size = unit(2, \'mm\'),\n',
+    '      legend.box.background = element_rect(fill = \'white\', colour = \'white\'),\n',
+    '      legend.key = element_blank(), legend.text = element_text(size = 12)\n',
+    '    ) + geom_scatterpie(\n',
+    '      data = deconv,\n',
+    '      aes(x = imagecol, y = imagerow),\n',
+    '      cols = cells,pie_scale = 0.4,color=NA\n',
+    '    ) + coord_fixed()\n',
+    '  }}\n',
+    '  return(gg_scatter)\n',
+    '}}\n\n',
+    'cellpercentage <- function(deconv, cells){{\n',
+    '  cell <-\n',
+    '    sapply(strsplit(grep(\n',
+    '      pattern = \'^score_\', colnames(deconv), value = T\n',
+    '    ), split = \'_\'), \'[[\', 2)\n',
+    '  \n',
+    '  if(length(intersect(cells,deconv$sampleID)) > 0){{\n',
+    '    dt <- deconv[which(deconv$sampleID %in% cells), cell, with = F] %>% colSums() %>% as.data.frame()\n',
+    '  }}else{{\n',
+    '    dt <- deconv[,cell,with = F] %>% colSums() %>% as.data.frame()\n',
+    '  }}\n',
+    '  \n',
+    '  colnames(dt) <- \'num\'\n',
+    '  dt$cell <- rownames(dt)\n',
+    '  \n',
+    '  dt <- dt %>% mutate(pct = round(100 * num / sum(num), 4))\n',
+    '  dt$tooltip <- paste0(dt$cell, \': \', dt$pct)\n',
+    '  \n',
+    '  p <- ggplot(dt,aes(x = \'\',y = pct, fill = cell)) + \n',
+    '    geom_col_interactive(data = dt,mapping = aes_string(tooltip = \'tooltip\')) + coord_polar(\'y\',start = 0) + theme_classic() + theme(\n',
+    '      axis.line = element_blank(),\n',
+    '      axis.text = element_blank(),\n',
+    '      axis.ticks = element_blank(),\n',
+    '      axis.title = element_blank(),\n',
+    '      legend.position = \'top\',\n',
+    '      legend.key.size = unit(2, \'mm\'),\n',
+    '      legend.box.background = element_rect(fill = \'white\', colour = \'white\'),\n',
+    '      legend.key = element_blank(), legend.text = element_text(size = 12)\n',
+    '    )\n',
+    '  return(p)\n',
+    '}}\n\n',
+    'deconvtab <- function(deconv, value, group, highlight = NULL) {{\n',
+    '  if (length(intersect(highlight, deconv$sampleID)) > 0) {{\n',
+    '    deconv <- deconv[which(deconv$sampleID %in% highlight), ]\n',
+    '  }}\n',
+    '  \n',
+    '  scores <- paste0(\'score_\', value)\n',
+    '  deconv_ex = deconv[, c(\'sampleID\', group, value, scores),\n',
+    '                     with = FALSE]\n',
+    '  \n',
+    '  colnames(deconv_ex) <- c(\'sampleID\', \'groupby\', \'PCT\', \'score\')\n',
+    '  df <- deconv_ex %>% group_by(groupby) %>%\n',
+    '    mutate(mean_pct = mean(PCT)) %>% mutate(mean_score = mean(score)) %>% mutate(nspots = n()) %>%\n',
+    '    dplyr::select(groupby, nspots , mean_pct, mean_score) %>% unique()\n',
+    '  \n',
+    '  colnames(df) <-\n',
+    '    c(group,\n',
+    '      \'nSpots\',\n',
+    '      paste0(value, \'_mean_pct\'),\n',
+    '      paste0(value, \'_mean_score\'))\n',
+    '  \n',
+    '  return(df)\n',
+    '}}\n\n',
+    
+    'deconvdensity <- function(deconv, value, highlight = NULL, scores = \'score\'){{\n',
+    '  if (length(intersect(highlight, deconv$sampleID)) > 0) {{\n',
+    '    deconv <- deconv[which(deconv$sampleID %in% highlight), ]\n',
+    '  }}\n',
+    '  \n',
+    '  if(scores == \'score\'){{\n',
+    '    play <- paste0(\'score_\', value)\n',
+    '  }}else{{\n',
+    '    play <- value\n',
+    '  }}\n',
+    '  \n',
+    '  deconv_ex <- deconv[,play,with = F]\n',
+    '  deconv_ex <- melt(deconv_ex, measure.vars = play,variable.name = \'cell\', value.name =  \'x\')\n',
+    '  deconv_ex <- deconv_ex[,.(cell,x,tooltip = NA),]\n',
+    '  \n',
+    '  \n',
+    '  for(i in play){{\n',
+    '    su <- summary(deconv_ex$x[which(deconv_ex$cell == i)])\n',
+    '    tooltip <- paste(i,\'\\n\',\'Min.\',su[\'Min.\'],\'\\n\')\n',
+    '    tooltip <- paste(tooltip,\'1st Qu.\',su[\'1st Qu.\'],\'\\n\')\n',
+    '    tooltip <- paste(tooltip,\'Median\',su[\'Median\'],\'\\n\')\n',
+    '    tooltip <- paste(tooltip,\'3rd Qu.\',su[\'3rd Qu.\'],\'\\n\')\n',
+    '    tooltip <- paste(tooltip,\'Max.\',su[\'Max.\'],\'\\n\')\n',
+    '    deconv_ex$tooltip[which(deconv_ex$cell == i)] <- tooltip\n',
+    '  }}\n',
+    '  \n',
+    '  \n',
+    '  p <- ggplot(deconv_ex,aes_string(tooltip = \'tooltip\')) + theme(\n',
+    '    panel.grid = element_blank(),\n',
+    '    axis.title = element_blank(),\n',
+    '    axis.line = element_line(colour = \"black\"),\n',
+    '    panel.background = element_rect(fill = \'white\', colour = NA),\n',
+    '    axis.text = element_text(size = 15),\n',
+    '    axis.text.x = element_text(\n',
+    '      angle = 30,\n',
+    '      hjust = 1,\n',
+    '      vjust = 1\n',
+    '    )\n',
+    '  ) + geom_density_interactive(aes(x = x, fill = cell), alpha = 0.5)\n',
+    '  \n',
+    '  return(p)\n',
+    '}}\n\n\n\n'
   )
   
   return(afun)
@@ -1333,6 +1504,7 @@ server_heads <- function(df_select) {
     '  # prepared data\n',
     '  ## meta: spot information, cluster, highlight\n',
     '  add_meta <- shiny::reactiveValues(meta = meta)\n',
+    '  deconv <- shiny::reactiveValues(meta = deconvolusion)\n',
     '  meta_group_add <- shiny::reactiveValues(meta = meta_group)\n',
     '  ## session\n',
     '  optCrt = \"{{ option_create: function(data,escape) {{return(\'<div class=\\"create\\"><strong>\' + \'</strong></div>\');}} }}\"\n')
@@ -1347,7 +1519,7 @@ server_heads <- function(df_select) {
     slice_data <- paste(slice_data, on_sli, sep = '')
   }
   
-  server_head <- paste(server_head,'\n',slice_data,'\n')
+  server_head <- paste('\n',server_head,'\n',slice_data,'\n\n')
   return(server_head)
 }
 
@@ -1481,7 +1653,7 @@ sp_server_p1 <- function(df_select){
     )
   }) %>% unlist() %>% paste(collapse = '\n')
   
-  server_p1 <- glue::glue('{sg}','{p1_gtab}','{p1slice}','\n')
+  server_p1 <- glue::glue('\n','{sg}','{p1_gtab}','{p1slice}','\n\n')
   return(server_p1)
 }
 
@@ -1616,7 +1788,7 @@ sp_server_p2 <- function(df_select){
     )
   }) %>% unlist() %>% paste(collapse = '\n')
   
-  server_p2 <- glue::glue('{p2_gs}','{p2_gtab}','{p2slice}','\n')
+  server_p2 <- glue::glue('\n','{p2_gs}','{p2_gtab}','{p2slice}','\n\n')
   return(server_p2)
 }
 
@@ -1717,7 +1889,7 @@ sp_server_p3 <- function(df_select){
     )
   }) %>% unlist() %>% paste(collapse = '\n')
   
-  server_p3 <- glue::glue('{p3_gs}','{p3_gtab}','{p3slice}','\n')
+  server_p3 <- glue::glue('\n','{p3_gs}','{p3_gtab}','{p3slice}','\n\n')
   return(server_p3)  
 }
 
@@ -1801,7 +1973,7 @@ sp_server_p4 <- function(df_select){
     )
   }) %>% unlist() %>% paste(collapse = '\n')
   
-  server_p4 <- glue::glue('{p4_gtab}','{p4slice}','\n')
+  server_p4 <- glue::glue('\n','{p4_gtab}','{p4slice}','\n\n')
   return(server_p4)  
 }
 
@@ -1933,7 +2105,305 @@ sp_server_p5 <- function(df_select){
   
   impinfo <- paste(impinfo,collapse = '')
   
-  server_p5 <- glue::glue('{p5_gtab}','{p5slice}','\n','{impinfo}','}')
+  server_p5 <- glue::glue('\n','{p5_gtab}','{p5slice}','\n','{impinfo}','\n\n')
   return(server_p5)
   
 }
+
+
+## page6
+sp_server_p6 <- function(df_select){
+  p6load <- lapply(1:length(df_select$slice), function(x){
+    glue::glue('deconv{x} <- reactive({{subset(deconv$meta,deconv$meta$slice_sample == unique(deconv$meta$slice_sample)[{x}])}})\n')
+  }) %>% unlist() %>% paste(collapse = '\n\n')  
+  p6load <- paste('\n\n','## page6','\n\n',p6load,'\n\n')
+  
+  
+  loadsp <- lapply(1:length(df_select$slice), function(x) {
+    glue::glue(
+      ' sps{x} <- deconv$meta$sampleID[which(\n',
+      '    deconv$meta[[input$de_bg]] %in% unique(c(input$de_bg_spot{x}_selected)) &\n',
+      '      deconv$meta[[\'slice_sample\']] %in% strsplit(meta_group_add$meta$unit[which(meta_group_add$meta$group == \'slice_sample\')], split = \'\\\\|\')[[1]][{x}]\n',
+      '  )]\n\n'
+    )
+  })
+  
+  
+  loadedsp <-
+    loadsp %>% unlist() %>% paste0(collapse = '') %>% glue::glue()
+  
+  
+  slsp <- paste('sps', 1:length(loadsp), sep = '', collapse = ',')
+  bgsp <- lapply(1:length(df_select$slice), function(x){
+    glue::glue("input$de_bg_spot{x}_selected")
+  }) %>% unlist() %>% paste(collapse = ',')
+  
+  scsp <- lapply(1:length(df_select$slice), function(x){
+    glue::glue("input$de_sco_spot{x}_selected")
+  }) %>% unlist() %>% paste(collapse = ',')
+  
+  
+  p6_tab <- glue::glue(
+    'output$statis_deconv <- renderDT({{\n',
+    '  if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '    {loadedsp}\n',
+    '    sps <- c({slsp})\n',
+    '  }} else{{\n',
+    '    sps <-\n',
+    '      unique(c({bgsp}))\n',
+    '  }}\n',
+    '  \n',
+    '  cells <- unique(c(sps, {scsp}))\n',
+    '  new_tab <- deconvtab(\n',
+    '    deconv = deconv$meta,\n',
+    '    value = input$celltyps,\n',
+    '    group = input$de_bg,\n',
+    '    highlight = cells)\n',
+    '  DT::datatable(\n',
+    '    new_tab,\n',
+    '    rownames = FALSE,\n',
+    '    extensions = \"Buttons\",\n',
+    '    options = list(\n',
+    '      pageLength = 4,\n',
+    '      dom = \"Bfrtip\",\n',
+    '      searching = TRUE,\n',
+    '      buttons = c(\"copy\", \"csv\", \"excel\", \'pdf\')))\n',
+    '}})\n\n'
+  )
+  
+  
+  p6_pie <- glue::glue(
+    'output$de_pie_plot <- ggiraph::renderGirafe({{\n',
+    '  if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '    {loadedsp}\n',
+    '    sps <- c({slsp})\n',
+    '  }} else{{\n',
+    '    sps <-\n',
+    '      unique(c({bgsp}))\n',
+    '  }}\n',
+    '  cells <- unique(c(sps, {scsp}))\n',
+    '  p <- cellpercentage(deconv = deconv$meta,cells = cells)\n',
+    '  inter_spatial(p)\n',
+    '}})\n',
+    'output$de_pie_plot.pdf <- downloadHandler(\n',
+    '  filename = function() {{ paste0(\"group\",\"_\",input$de_bg,\".pdf\") }},\n',
+    '  content = function(file) {{\n',
+    '    if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '      {loadedsp}\n',
+    '      sps <- c({slsp})\n',
+    '    }} else{{\n',
+    '      sps <-\n',
+    '        unique(c({bgsp}))\n',
+    '    }}\n',
+    '    cells <- unique(c(sps, {scsp}))\n',
+    '    ggsave(file,device = \"pdf\",\n',
+    '           height = input$de_pie_plot.h,\n',
+    '           width = input$de_pie_plot.w,\n',
+    '           plot = cellpercentage(deconv = deconv$meta,cells = cells)\n',
+    '    )}})\n',
+    'output$de_pie_plot.png <- downloadHandler(\n',
+    '  filename = function() {{paste0(\"group\", \"_\",input$de_bg, \".png\")}},\n',
+    '  content = function(file) {{\n',
+    '    if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '      {loadedsp}\n',
+    '      sps <- c({slsp})\n',
+    '    }} else{{\n',
+    '      sps <-\n',
+    '        unique(c({bgsp}))\n',
+    '    }}\n',
+    '    cells <- unique(c(sps, {scsp}))\n',
+    '    \n',
+    '    ggsave(file,device = \"png\",\n',
+    '           height = input$de_pie_plot.h,\n',
+    '           width = input$de_pie_plot.w,\n',
+    '           plot = cellpercentage(deconv = deconv$meta,cells = cells)\n',
+    '    )}})\n\n'
+  )
+  
+  
+  p6_vln <- glue::glue(
+    '  output$de_vln_plot <- ggiraph::renderGirafe({{\n',
+    '    if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '      {loadedsp}\n',
+    '      sps <- c({slsp})\n',
+    '    }} else{{\n',
+    '      sps <-\n',
+    '        unique(c({bgsp}))\n',
+    '    }}\n',
+    '    cells <- unique(c(sps, {scsp}))\n',
+    '    p <- outvbplot(\n',
+    '      x = input$de_bg,\n',
+    '      y = input$celltyps,\n',
+    '      ynames = \'cell score\',\n',
+    '      meta_group = meta_group_add$meta,\n',
+    '      meta = deconv$meta,\n',
+    '      data = data,\n',
+    '      genesets = genesets,highlight = cells\n',
+    '    )\n',
+    '    inter_spatial(p)\n',
+    '  }})\n',
+    '  output$de_vln_plot.pdf <- downloadHandler(\n',
+    '    filename = function() {{ paste0(\"group\",\"_\",input$de_bg,\".pdf\") }},\n',
+    '    content = function(file) {{\n',
+    '      if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '        {loadedsp}\n',
+    '        sps <- c({slsp})\n',
+    '      }} else{{\n',
+    '        sps <-\n',
+    '          unique(c({bgsp}))\n',
+    '      }}\n',
+    '      cells <- unique(c(sps, {scsp}))\n',
+    '      ggsave(file,device = \"pdf\",\n',
+    '             height = input$de_vln_plot.h,\n',
+    '             width = input$de_vln_plot.w,\n',
+    '             plot = outvbplot(\n',
+    '               x = input$de_bg,\n',
+    '               y = input$celltyps,\n',
+    '               ynames = \'cell score\',\n',
+    '               meta_group = meta_group_add$meta,\n',
+    '               meta = deconv$meta,\n',
+    '               data = data,\n',
+    '               genesets = genesets,highlight = cells\n',
+    '             )\n',
+    '      )}})\n',
+    '  output$de_vln_plot.png <- downloadHandler(\n',
+    '    filename = function() {{paste0(\"group\", \"_\",input$de_bg, \".png\")}},\n',
+    '    content = function(file) {{\n',
+    '      if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '        {loadedsp}\n',
+    '        sps <- c({slsp})\n',
+    '      }} else{{\n',
+    '        sps <-\n',
+    '          unique(c({bgsp}))\n',
+    '      }}\n',
+    '      cells <- unique(c(sps, {scsp}))\n',
+    '      ggsave(file,device = \"png\",\n',
+    '             height = input$de_vln_plot.h,\n',
+    '             width = input$de_vln_plot.w,\n',
+    '             plot = outvbplot(\n',
+    '               x = input$de_bg,\n',
+    '               y = input$celltyps,\n',
+    '               ynames = \'cell score\',\n',
+    '               meta_group = meta_group_add$meta,\n',
+    '               meta = deconv$meta,\n',
+    '               data = data,\n',
+    '               genesets = genesets,highlight = cells\n',
+    '             )\n',
+    '      )}})\n\n'
+  )
+  
+  
+  p6_den <- glue::glue(
+    '  output$de_den_plot <- ggiraph::renderGirafe({{\n',
+    '    if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '      {loadedsp}\n',
+    '      sps <- c({slsp})\n',
+    '    }} else{{\n',
+    '      sps <-\n',
+    '        unique(c(bgsp))\n',
+    '    }}\n',
+    '    cells <- unique(c(sps, {scsp}))\n',
+    '    p <- deconvdensity(deconv = deconv$meta,value = input$celltyps, highlight = cells)\n',
+    '    inter_spatial(p)\n',
+    '  }})\n',
+    '  output$de_den_plot.pdf <- downloadHandler(\n',
+    '    filename = function() {{ paste0(\"group\",\"_\",input$meta1_select,\".pdf\") }},\n',
+    '    content = function(file) {{\n',
+    '      if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '        {loadedsp}\n',
+    '        sps <- c({slsp})\n',
+    '      }} else{{\n',
+    '        sps <-\n',
+    '          unique(c(bgsp))\n',
+    '      }}\n',
+    '      cells <- unique(c(sps, {scsp}))\n',
+    '      \n',
+    '      ggsave(file,device = \"pdf\",\n',
+    '             height = input$de_den_plot.h,\n',
+    '             width = input$de_den_plot.w,\n',
+    '             plot = deconvdensity(deconv = deconv$meta,value = input$celltyps, highlight = cells)\n',
+    '      )}})\n',
+    '  output$de_den_plot.png <- downloadHandler(\n',
+    '    filename = function() {{paste0(\"group\", \"_\",input$meta1_select, \".png\")}},\n',
+    '    content = function(file) {{\n',
+    '      if (input$de_bg %in% meta_group_add$meta[meta_group_add$meta$info == T, group]) {{\n',
+    '        {loadedsp}\n',
+    '        sps <- c({slsp})\n',
+    '      }} else{{\n',
+    '        sps <-\n',
+    '          unique(c(bgsp))\n',
+    '      }}\n',
+    '      cells <- unique(c(sps, {scsp}))\n',
+    '      \n',
+    '      ggsave(file,device = \"png\",\n',
+    '             height = input$de_den_plot.h,\n',
+    '             width = input$de_den_plot.w,\n',
+    '             plot = deconvdensity(deconv = deconv$meta,value = input$celltyps, highlight = cells)\n',
+    '      )}})\n\n'
+  )
+  
+  
+  p6slice <- lapply(1:length(df_select$slice), function(k){
+    glue::glue(
+      '## slice {k}\n',
+      'shiny::observeEvent(input$reset6, {{\n',
+      '  session$sendCustomMessage(type = \'de_sco_spot{k}_set\', message = character(0))\n',
+      '  session$sendCustomMessage(type = \'de_bg_spot{k}_set\', message = character(0))}})\n',
+      
+      'output$de_bg_spot{k} <- ggiraph::renderGirafe({{\n',
+      '  sp <- spatial_dimplot(\n',
+      '    meta_slice = add_meta{k}(),pt_size = input$point_size,\n',
+      '    meta_group = meta_group_add$meta,\n',
+      '    col.by = input$de_bg,\n',
+      '    input_image = image_slice{k}$images)\n',
+      '  inter_spatial(gg_scatter = sp)\n',
+      '}})\n',
+      
+      'output$de_pct_spot{k} <- renderPlot({{\n',
+      '  spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '}})\n',
+      'output$de_pct_spot{k}.pdf <- downloadHandler(\n',
+      '  filename = function() {{ paste0(\"cellcomponent{k}\",\".pdf\") }},\n',
+      '  content = function(file) {{\n',
+      '    ggsave(file,device = \"pdf\",\n',
+      '           height = input$de_pct_spot{k}.h,\n',
+      '           width = input$de_pct_spot{k}.w,\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '    )}})\n',
+      'output$de_pct_spot{k}.png <- downloadHandler(\n',
+      '  filename = function() {{paste0(\"cellcomponent{k}\",\".png\")}},\n',
+      '  content = function(file) {{\n',
+      '    ggsave(file,device = \"png\",\n',
+      '           height = input$de_pct_spot{k}.h,\n',
+      '           width = input$de_pct_spot{k}.w,\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '    )}})\n',
+      'output$de_sco_spot{k} <- ggiraph::renderGirafe({{\n',
+      '  p <- spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(),score = input$celltyps,pt_size = input$point_size)\n',
+      '  inter_spatial(p)\n',
+      '}})\n',
+      'output$de_sco_spot{k}.pdf <- downloadHandler(\n',
+      '  filename = function() {{ paste0(\"group\",\"_\",input$celltyps,\".pdf\") }},\n',
+      '  content = function(file) {{\n',
+      '    ggsave(file,device = \"pdf\",\n',
+      '           height = input$de_sco_spot{k}.h,\n',
+      '           width = input$de_sco_spot{k}.w,\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(),score = input$celltyps,pt_size = input$point_size)\n',
+      '    )}})\n',
+      'output$de_sco_spot{k}.png <- downloadHandler(\n',
+      '  filename = function() {{paste0(\"group\", \"_\",input$celltyps, \".png\")}},\n',
+      '  content = function(file) {{\n',
+      '    ggsave(file,device = \"png\",\n',
+      '           height = input$de_sco_spot{k}.h,\n',
+      '           width = input$de_sco_spot{k}.w,\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(),score = input$celltyps,pt_size = input$point_size)\n',
+      '    )}})\n\n\n'
+    )
+  }) %>% unlist() %>% paste(collapse = '\n')
+  
+  
+  
+  server_p6 <- glue::glue('\n','{p6load}','{p6_tab}','{p6_pie}','{p6_vln}','{p6_den}','{p6slice}','}','\n\n')
+  return(server_p6)
+}
+
