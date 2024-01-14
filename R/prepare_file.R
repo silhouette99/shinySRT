@@ -1,5 +1,7 @@
 #' Prepare data files required for shiny app
 #'
+#' This function could generate data files for shiny app by saptial transcriptomic data, e.g. matrix, metadata, coordination, H&E images.
+#'
 #' Generate data files required for shiny app.Six files will be generated,
 #' (1) shinySRT config \code{meta_group.Rds}
 #' (2) the gene mapping object config \code{genesets.Rds}
@@ -36,6 +38,10 @@
 #'   to the actual gene identifiers in the gene expression matrix and
 #'   \code{gene.mapping} correspond to new identifiers to map to
 #' @param shiny.prefix specify file prefix
+#' @param normalize normlize the scRNA expression data
+#' @param sp_normalize normalize the ST RNA expression data
+#' @param scmtx scRNA expression matrix
+#' @param scmeta scRNA metadata
 #' @param shiny.dir specify directory to create the shiny app in
 #' @param default.gene1 specify primary default gene to show
 #' @param default.gene2 specify secondary default gene to show
@@ -78,6 +84,7 @@ preparedata_shinyspatial <- function(dat,
                                      scmtx = NULL,
                                      scmeta = NULL,
                                      normalize = T,
+                                     sp_normalize = T,
                                      colcluster = NULL,
                                      sp_cols = NULL,
                                      default.gene1 = NA,
@@ -373,23 +380,33 @@ preparedata_shinyspatial <- function(dat,
       stop(paste0("shinySRT did not detect any coordination data"))
     }
     
-    meta <- lapply(obj[['obs']]$names, function(i){
-      if(class(obj[['obs']][[i]])[1] == "H5Group"){
-        meta_inf <- obj[['obs']][[i]][['codes']]$read()
-        meta_inf <- factor(meta_inf, levels = unique(meta_inf))
-        levels(meta_inf) <- obj[['obs']][[i]][['categories']]$read()
-      }else if(class(obj[['obs']][[i]])[1] == "H5D"){
-        meta_inf <- obj[['obs']][[i]]$read()
-      }
-      meta_inf <- as.data.frame(meta_inf)
-      if(i == '_index'){
-        colnames(meta_inf) <- 'spots'
+    mcols <- lapply(obj[['obs']]$names, function(i){
+      if(class(obj[['obs']][[i]])[1] == "H5D"){
+        mcols <- i
       }else{
-        colnames(meta_inf) <- i
+        mcols <- NULL
       }
-      
+    }) %>% unlist()
+    
+    meta <- lapply(mcols, function(i){
+      # if(class(obj[['obs']][[i]])[1] == "H5D"){
+      #   # meta_inf <- obj[['obs']][[i]][['codes']]$read()
+      #   meta_inf <- obj[['obs']][[i]]$read()
+      #   meta_inf <- factor(meta_inf, levels = unique(meta_inf))
+      #   levels(meta_inf) <- obj[['obs']][[i]][['categories']]$read()
+      # }else if(class(obj[['obs']][[i]])[1] == "H5D"){
+      #   meta_inf <- obj[['obs']][[i]]$read()
+      # }
+        meta_inf <- obj[['obs']][[i]]$read()
+        meta_inf <- as.data.frame(meta_inf)
+        if(i == '_index'){
+          colnames(meta_inf) <- 'spots'
+        }else{
+          colnames(meta_inf) <- i
+        }
       return(meta_inf)
     })
+    
     
     meta <- do.call(cbind, meta)
     
@@ -601,24 +618,24 @@ preparedata_shinyspatial <- function(dat,
   }else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
     
-    meta <- lapply(obj[['obs']]$names, function(i){
-      if(class(obj[['obs']][[i]])[1] == "H5Group"){
-        meta_inf <- obj[['obs']][[i]][['codes']]$read()
-        meta_inf <- factor(meta_inf, levels = unique(meta_inf))
-        levels(meta_inf) <- obj[['obs']][[i]][['categories']]$read()
-      }else if(class(obj[['obs']][[i]])[1] == "H5D"){
-        meta_inf <- obj[['obs']][[i]]$read()
-      }
-      meta_inf <- as.data.frame(meta_inf)
-      if(i == '_index'){
-        colnames(meta_inf) <- 'spots'
-      }else{
-        colnames(meta_inf) <- i
-      }
-      return(meta_inf)
-    })
-    
-    meta <- do.call(cbind, meta)
+    # meta <- lapply(obj[['obs']]$names, function(i){
+    #   if(class(obj[['obs']][[i]])[1] == "H5Group"){
+    #     meta_inf <- obj[['obs']][[i]][['codes']]$read()
+    #     meta_inf <- factor(meta_inf, levels = unique(meta_inf))
+    #     levels(meta_inf) <- obj[['obs']][[i]][['categories']]$read()
+    #   }else if(class(obj[['obs']][[i]])[1] == "H5D"){
+    #     meta_inf <- obj[['obs']][[i]]$read()
+    #   }
+    #   meta_inf <- as.data.frame(meta_inf)
+    #   if(i == '_index'){
+    #     colnames(meta_inf) <- 'spots'
+    #   }else{
+    #     colnames(meta_inf) <- i
+    #   }
+    #   return(meta_inf)
+    # })
+    # 
+    # meta <- do.call(cbind, meta)
     if(dmExist){
       embedding <- lapply(grep('^X_',obj[['obsm']]$names,value = T), function(x) {
         embedding <- obj[['obsm']][[x]]$read()%>%t()%>%as.data.frame()
@@ -824,7 +841,11 @@ preparedata_shinyspatial <- function(dat,
     gex.rownm = obj[['var']][['gene_ids']]$read()
     gex.colnm = meta$spots
     gex.matdim = c(length(gex.rownm),length(gex.colnm))
-    defGenes = gex.rownm[1:10]
+    if(obj[['var']]$attr_exists('highly_variable')){
+      defGenes = gex.rownm[obj[['var']][['highly_variable']]$read()][1:10]
+    }else{
+      defGenes = gex.rownm[1:10]
+    }
     
     obj$close_all()
   }
@@ -947,49 +968,69 @@ preparedata_shinyspatial <- function(dat,
   
   
   if (class(dat)[1] == "Seurat") {
+    if(sp_normalize){
+      da <- scran_norm(mymatrix = slot(dat@assays[[gex.assay[1]]],
+                                        gex.slot[1]))
+    }else{
+      da <- slot(dat@assays[[gex.assay[1]]],
+                 gex.slot[1])
+    }
     for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
       mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
-        as.matrix(slot(dat@assays[[gex.assay[1]]],
-                       gex.slot[1])[((i - 1) * chk + 1):(i * chk),])
+        as.matrix(da[((i - 1) * chk + 1):(i * chk),])
     }
     mat_exp.grp.data[(i * chk + 1):gex.matdim[1],] <-
-      as.matrix(slot(dat@assays[[gex.assay[1]]],
-                     gex.slot[1])[(i * chk + 1):gex.matdim[1],])
+      as.matrix(da[(i * chk + 1):gex.matdim[1],])
     mat_exp$close_all()
   } else if (class(dat)[1] == "SpatialExperiment" |
              class(dat)[1] == "SingleCellExperiment") {
+    if(sp_normalize){
+      da <- scran_norm(mymatrix = SummarizedExperiment::assay(dat,gex.assay[1]))
+    }else{
+      da <- SummarizedExperiment::assay(dat,gex.assay[1])
+    }
     for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
       mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
-        as.matrix(SummarizedExperiment::assay(dat,
-                                              gex.assay[1])[((i - 1) * chk + 1):(i * chk),])
+        as.matrix(da[((i - 1) * chk + 1):(i * chk),])
     }
     mat_exp.grp.data[(i * chk + 1):gex.matdim[1],] <-
-      as.matrix(SummarizedExperiment::assay(dat,
-                                            gex.assay[1])[(i * chk + 1):gex.matdim[1],])
+      as.matrix(da[(i * chk + 1):gex.matdim[1],])
     mat_exp$close_all()
   }else if (class(dat)[1] == 'list') {
+    if(sp_normalize){
+      da <- scran_norm(dat[['data']])
+    }else{
+      da <- dat[['data']]
+    }
     for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
       mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
-        as.matrix(dat[['data']][((i - 1) * chk + 1):(i * chk),])
+        as.matrix(da[((i - 1) * chk + 1):(i * chk),])
     }
     mat_exp.grp.data[(i * chk + 1):gex.matdim[1],] <-
-      as.matrix(dat[['data']][(i * chk + 1):gex.matdim[1],])
+      as.matrix(da[(i * chk + 1):gex.matdim[1],])
     mat_exp$close_all()
   }else if(tolower(tools::file_ext(dat)) == "h5ad"){
-    obj <- hdf5r::H5File$new(dat, mode = "r")
-    da <- rep(NA, length(gex.colnm)*length(gex.rownm))
-    da[obj[['X']][['indices']]$read()] <- obj[['X']][['data']]$read()
-    da[which(is.na(da))] <- 0
-    da <- matrix(da,nrow = length(gex.colnm)) %>% t()
-    
+    # obj <- hdf5r::H5File$new(dat, mode = "r")
+    ad <- import("anndata", convert = FALSE)
+    sp <- import("scipy.sparse", convert = FALSE)
+    inpH5 = ad$read_h5ad(dat)
+    da <- Matrix::t(py_to_r(sp$csc_matrix(inpH5$X)))
+    # da <- rep(NA, length(gex.colnm)*length(gex.rownm))
+    # ods <- obj[['X']][['indices']]$read()
+    # da[['X']][['data']]$read()
+    # da[which(is.na(da))] <- 0
+    # da <- matrix(da,nrow = length(gex.colnm)) %>% t()
+    if(sp_normalize){
+      da <- scran_norm(mymatrix = da)
+    }
     for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
       mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
-        da[((i - 1) * chk + 1):(i * chk),]
+        as.matrix(da[((i - 1) * chk + 1):(i * chk),])
     }
     mat_exp.grp.data[(i * chk + 1):gex.matdim[1],] <-
-      da[(i * chk + 1):gex.matdim[1],]
+      as.matrix(da[(i * chk + 1):gex.matdim[1],])
     mat_exp$close_all()
-    obj$close_all()
+    # obj$close_all()
   }
   
   
@@ -1070,7 +1111,7 @@ preparedata_shinyspatial <- function(dat,
       varg <- scran_hvg(mtx = mtx,meta = scmeta,colcluster = colcluster)
     }
     
-    sign_gene <- varg[, head(.SD, 10), by = "clusters"]
+    sign_gene <- varg[, head(.SD, 25), by = "clusters"]
     sign_matrix <-
       DWLSmatrix(
         matrix = mtx,
@@ -1083,37 +1124,51 @@ preparedata_shinyspatial <- function(dat,
   
   if(!is.null(scmtx) & !is.null(scmeta) & length(intersect(colcluster, colnames(scmeta))) > 0){
     if (class(dat)[1] == "Seurat") {
-      sp_mtx <- slot(dat@assays[[gex.assay[1]]],
-                     gex.slot[1])
-      if (gex.slot[1] == 'counts') {
-        sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      if (!sp_normalize) {
+        sp_mtx <- scran_norm(mymatrix = slot(dat@assays[[gex.assay[1]]],
+                                             'counts'))
+      } else {
+        sp_mtx <- da
       }
+      
+      # if (!sp_normalize) {
+      #   sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      # }
       
     } else if (class(dat)[1] == "SpatialExperiment" |
                class(dat)[1] == "SingleCellExperiment") {
-      sp_mtx <- SummarizedExperiment::assay(dat, gex.assay[1])
-      if(gex.slot[1] == 'counts'){
-        sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      
+      if(!sp_normalize){
+        scran_norm(mymatrix = SummarizedExperiment::assay(dat,'counts'))
+      }else{
+        sp_mtx <- da
       }
       
     } else if (class(dat)[1] == 'list') {
-      if(!dat$normalize){
-        sp_mtx <- dat[['data']]
+      sp_mtx <- da
+      if(!sp_normalize){
+        sp_mtx <- scran_norm(mymatrix = sp_mtx)
       }
       
     } else if (tolower(tools::file_ext(dat)) == "h5ad") {
-      obj <- hdf5r::H5File$new(dat, mode = "r")
-      sp_mtx <- rep(NA, length(gex.colnm) * length(gex.rownm))
-      sp_mtx[obj[['X']][['indices']]$read()] <-
-        obj[['X']][['data']]$read()
-      sp_mtx[which(is.na(sp_mtx))] <- 0
-      sp_mtx <- matrix(sp_mtx, nrow = length(gex.colnm)) %>% t()
-      rownames(sp_mtx) <- gex.rownm
+      # obj <- hdf5r::H5File$new(dat, mode = "r")
+      # sp_mtx <- rep(NA, length(gex.colnm) * length(gex.rownm))
+      # sp_mtx[obj[['X']][['indices']]$read()] <-
+      #   obj[['X']][['data']]$read()
+      # sp_mtx[which(is.na(sp_mtx))] <- 0
+      # sp_mtx <- matrix(sp_mtx, nrow = length(gex.colnm)) %>% t()
+      # rownames(sp_mtx) <- gex.rownm
+      # colnames(sp_mtx) <- gex.colnm
+      sp_mtx <- da
+      if(!sp_normalize){
+        sp_mtx <- scran_norm(mymatrix = sp_mtx)
+      }
+      # sp_mtx <- as(sp_mtx,'dgCMatrix')
       colnames(sp_mtx) <- gex.colnm
-      sp_mtx <- as(sp_mtx,'dgCMatrix')
+      rownames(sp_mtx) <- gex.rownm
     }
     
-    if(sum(grepl("^ENSG000", gex.rownm)) > 0 & sum(grepl("^ENSMUSG000",gex.rownm)) > 0){
+    if(sum(grepl("^ENSG000", gex.rownm)) > 0 | sum(grepl("^ENSMUSG000",gex.rownm)) > 0){
       if (sum(grepl("^ENSG000", gex.rownm)) >= sum(grepl("^ENSMUSG000",gex.rownm))) {
         tmp1 = fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
       } else {

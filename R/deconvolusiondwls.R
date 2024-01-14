@@ -1,6 +1,9 @@
 #' Deconvolusion of Giotto in shinySRT
 #'
-#'
+#' 
+#' This function could be used to predict the cellular component of each spots, refering to Giotto's DWLS deconvolusion function. 
+#' 
+#' 
 #' @param norm_mtx normalized data matrix (or sparse)
 #' @param logbase base used for log normalization
 #' @param cell_metadata spatial meta
@@ -10,7 +13,7 @@
 #'
 #'
 #'
-#'
+#' @return data.table of cellular component 
 #'
 #'
 #' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment quadprog Rfast scran
@@ -89,13 +92,16 @@ runDWLSDeconv <-
   }
 
 #' 
-#' scran normalization
+#' Scran normalization
+#' 
+#' Normalize the count data present in a given assay.
 #' 
 #' 
 #' @param mymatrix transcriptomic data matrix
 #' @param log_offset offset
 #' @param logbase base used for log normalization
 #' 
+#' @return a normalized data matrix 
 #' 
 #' @export
 
@@ -121,11 +127,11 @@ scran_norm <-
       
       if (any(libsizes == 0)) {
         warning(
-          wrap_txt(
+          
             'Total library size or counts for individual spat units are 0.
                      This will likely result in normalization problems.
                      filter (filterGiotto) or impute (imputeGiotto) spatial units.'
-          )
+          
         )
       }
       
@@ -145,7 +151,11 @@ scran_norm <-
 
 #'
 #' Find highly variable gene
-#'@param pamtx normalized data matrix
+#' 
+#' 
+#' Identifies features
+#' 
+#' @param mtx normalized data matrix
 #' 
 #'
 #'
@@ -227,11 +237,18 @@ scran_hvg <- function(mtx,
 
 
 
-#' get DWLS signature gene-cell matrix for deconvolusion
-#'@param matrix normalized scRNA-seq matrix
-#'@param sign_gene signature gene
-#'@param cell_cols colums of cell type
-#'@param meta scRNA-seq meta
+#' 
+#' 
+#' 
+#' Get DWLS signature gene-cell matrix for deconvolusion
+#' 
+#' This function uses the hvg of each cell type as cell type signatures
+#' 
+#' 
+#' @param matrix normalized scRNA-seq matrix
+#' @param sign_gene signature gene
+#' @param cell_cols colums of cell type
+#' @param meta scRNA-seq meta
 #'
 #'@export
 

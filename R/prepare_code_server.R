@@ -1,15 +1,17 @@
 #' server code prepared for shinySRT
 #'
+#' Prepare the server code for shinyApp.
+#'
 #'
 #' @param shiny.dir specify directory to create the shiny app in. Default is
 #'   to create a new directory named "shinyspatial_app"
 #'
-#' lib_server : load package in ui scirpts
+#' 
 #'
 #'
 #'
 #'
-#' @return data files required for shiny app
+#' @return server code required for shiny app
 #'
 #'
 #'
@@ -70,17 +72,24 @@ col_server <- function() {
   return(col)
 }
 ## load data in server script
-data_server <- function() {
+data_server <- function(df_select) {
   dat <- glue::glue(
     'meta <- readRDS(\'meta.Rds\')\n',
     'meta_group <- readRDS(\'meta_group.Rds\')\n',
     'genesets <- readRDS(\'genesets.Rds\')\n',
     'df_select <- readRDS(\'df_select.Rds\')\n',
     'image <- readRDS(\'image.Rds\')\n',
-    'deconvolusion <- readRDS(\'deconvolusion.Rds\')\n',
     'data = \"data.h5\"\n',
     'meta$group <- NA\n\n\n'
   )
+  
+  if(length(df_select$cell) > 0){
+    dat2 <- 'deconvolusion <- readRDS(\'deconvolusion.Rds\')\n\n\n'
+  }else{
+    dat2 <- '\n\n'
+  }
+  dat <- glue::glue(paste0(dat,dat2))
+  
   return(dat)
 }
 ## function in server script
@@ -1324,7 +1333,7 @@ fun_server <- function() {
     '    colnames(meta)[3] = paste0(colnames(meta)[3], \"_\", gene)\n',
     '    return(meta)}}\n\n',
     
-    'spatialdwls <- function(input_image,deconv,pie_scale = 0.4, score = NULL,pt.alpha = 0.7,pt_size = 0.8){{\n',
+    'spatialdwls <- function(input_image,deconv,pie_scale = 0.5, score = NULL,pt.alpha = 0.7,pt_size = 0.8){{\n',
     '  if (!is.null(input_image)) {{\n',
     '    xrange <- c(25, dim(input_image)[2] - 25)\n',
     '    yrange <- c(25, dim(input_image)[1] - 25)\n',
@@ -1372,6 +1381,7 @@ fun_server <- function() {
     '    \n',
     '  }}else{{\n',
     '    cells <- sapply(strsplit(grep(pattern = \'^score_\', colnames(deconv),value = T),split = \'_\'),\'[[\',2)\n',
+    '    cells <- cells[order(cells)]',
     '    # names(cells) <- col_box[1:length(grep(pattern = \'^score_\', colnames(deconv),value = T))]\n',
     '    gg_scatter <- ggplot(\n',
     '      data = deconv,\n',
@@ -1391,7 +1401,7 @@ fun_server <- function() {
     '    ) + geom_scatterpie(\n',
     '      data = deconv,\n',
     '      aes(x = imagecol, y = imagerow),\n',
-    '      cols = cells,pie_scale = 0.4,color=NA\n',
+    '      cols = cells,pie_scale = pie_scale,color=NA\n',
     '    ) + coord_fixed()\n',
     '  }}\n',
     '  return(gg_scatter)\n',
@@ -1499,15 +1509,25 @@ fun_server <- function() {
 
 ## server header
 server_heads <- function(df_select) {
-  server_head <- glue::glue(
-    'server <- function(input, output, session) {{\n',
+  server_head <- c(
+    'server <- function(input, output, session) {\n',
     '  # prepared data\n',
     '  ## meta: spot information, cluster, highlight\n',
     '  add_meta <- shiny::reactiveValues(meta = meta)\n',
-    '  deconv <- shiny::reactiveValues(meta = deconvolusion)\n',
     '  meta_group_add <- shiny::reactiveValues(meta = meta_group)\n',
     '  ## session\n',
-    '  optCrt = \"{{ option_create: function(data,escape) {{return(\'<div class=\\"create\\"><strong>\' + \'</strong></div>\');}} }}\"\n')
+    '  optCrt = \"{ option_create: function(data,escape) {return(\'<div class=\\"create\\"><strong>\' + \'</strong></div>\');} }\"\n')
+  server_head <- paste(server_head,collapse = '')
+  
+  if(length(df_select$cell) > 0){
+    desc <- '  deconv <- shiny::reactiveValues(meta = deconvolusion)\n\n'
+  }else{
+    desc <- '  \n\n'
+  }
+  
+  server_head <- paste0(server_head, '\n',desc)
+  server_head <- glue::glue('{server_head}')
+  
   
   slice_data <- c()
   for (i in 1:length(df_select$slice)) {
@@ -2360,7 +2380,7 @@ sp_server_p6 <- function(df_select){
       '}})\n',
       
       'output$de_pct_spot{k} <- renderPlot({{\n',
-      '  spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '  spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(), pie_scale = input$point_size/1.6)\n',
       '}})\n',
       'output$de_pct_spot{k}.pdf <- downloadHandler(\n',
       '  filename = function() {{ paste0(\"cellcomponent{k}\",\".pdf\") }},\n',
@@ -2368,7 +2388,7 @@ sp_server_p6 <- function(df_select){
       '    ggsave(file,device = \"pdf\",\n',
       '           height = input$de_pct_spot{k}.h,\n',
       '           width = input$de_pct_spot{k}.w,\n',
-      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(), pie_scale = input$point_size/1.6)\n',
       '    )}})\n',
       'output$de_pct_spot{k}.png <- downloadHandler(\n',
       '  filename = function() {{paste0(\"cellcomponent{k}\",\".png\")}},\n',
@@ -2376,7 +2396,7 @@ sp_server_p6 <- function(df_select){
       '    ggsave(file,device = \"png\",\n',
       '           height = input$de_pct_spot{k}.h,\n',
       '           width = input$de_pct_spot{k}.w,\n',
-      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}())\n',
+      '           plot = spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(), pie_scale = input$point_size/1.6)\n',
       '    )}})\n',
       'output$de_sco_spot{k} <- ggiraph::renderGirafe({{\n',
       '  p <- spatialdwls(input_image = image_slice{k}$images, deconv = deconv{k}(),score = input$celltyps,pt_size = input$point_size)\n',

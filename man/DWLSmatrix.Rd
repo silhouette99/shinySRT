@@ -2,7 +2,7 @@
 % Please edit documentation in R/deconvolusiondwls.R
 \name{DWLSmatrix}
 \alias{DWLSmatrix}
-\title{get DWLS signature gene-cell matrix for deconvolusion}
+\title{Get DWLS signature gene-cell matrix for deconvolusion}
 \usage{
 DWLSmatrix(matrix, sign_gene, cell_cols, meta)
 }
@@ -16,5 +16,5 @@ DWLSmatrix(matrix, sign_gene, cell_cols, meta)
 \item{meta}{scRNA-seq meta}
 }
 \description{
-get DWLS signature gene-cell matrix for deconvolusion
+This function uses the hvg of each cell type as cell type signatures
 }

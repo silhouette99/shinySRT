@@ -222,10 +222,17 @@ find_dampening_constant <- function(S,
   wsScaled = ws / min(ws)
   wsScaledMinusInf = wsScaled
   
+  if (is.na(max(wsScaled))) {
+    wsScaled = wsScaled[-which(is.na(wsScaled))]
+    wsScaledMinusInf = wsScaled
+  }
+  
   #ignore infinite weights
   if (max(wsScaled) == "Inf") {
     wsScaledMinusInf = wsScaled[-which(wsScaled == "Inf")]
   }
+  
+  
   
   #try multiple values of the dampening constant (multiplier)
   #for each, calculate the variance of the dampened weighted solution for a subset of genes

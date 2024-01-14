@@ -1,7 +1,11 @@
-#' prepare the code for shinySRT
+#' Prepare the code for shinySRT
+#' 
+#' 
+#' Prepare the code of shinyApp for shinySRT, including ui and server. 
+#' 
 #'
 #'
-#' #' Generate code files required for shiny app containing only one dataset. In
+#' Generate code files required for shiny app containing only one dataset. In
 #' particular, two R scripts will be generated, namely \code{server.R} and
 #' \code{ui.R}. If users want to include multiple dataset in one shiny app.
 #'  Note that both \code{preparedata_shinyspatial} and \code{prepare_code}
@@ -9,7 +13,7 @@
 #' running the wrapper function \code{makespashiny}.
 #'
 #'
-#' @param shiny.dir save the shiny code and data
+#' @param shiny.dir directory saving the shiny code and data
 #' @param title the title of the given shinySRT
 #'
 #' @return
@@ -30,7 +34,7 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   # color
   readr::write_file(col_server(),file = filename,append = T)
   # load data
-  readr::write_file(data_server(),file = filename,append = T)
+  readr::write_file(data_server(df_select = df_select),file = filename,append = T)
   # function
   readr::write_file(fun_server(),file = filename,append = T)
   # page
@@ -60,7 +64,7 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
     append = T
   )
   
-  readr::write_file(ui_head(title), file = filename, append = T)
+  readr::write_file(ui_head(title,df_select = df_select), file = filename, append = T)
   ## page1
   readr::write_file(ui_p1(df_select), file = filename, append = T)
   ## page2

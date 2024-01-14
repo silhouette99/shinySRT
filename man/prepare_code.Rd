@@ -2,17 +2,20 @@
 % Please edit documentation in R/prepare_code.R
 \name{prepare_code}
 \alias{prepare_code}
-\title{prepare the code for shinySRT}
+\title{Prepare the code for shinySRT}
 \usage{
 prepare_code(shiny.dir = "shinyspatial_app", title = "spatial_example")
 }
 \arguments{
-\item{shiny.dir}{save the shiny code and data}
+\item{shiny.dir}{directory saving the shiny code and data}
 
 \item{title}{the title of the given shinySRT}
 }
 \description{
-#' Generate code files required for shiny app containing only one dataset. In
+Prepare the code of shinyApp for shinySRT, including ui and server.
+}
+\details{
+Generate code files required for shiny app containing only one dataset. In
 particular, two R scripts will be generated, namely \code{server.R} and
 \code{ui.R}. If users want to include multiple dataset in one shiny app.
 Note that both \code{preparedata_shinyspatial} and \code{prepare_code}

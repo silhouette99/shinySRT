@@ -1,4 +1,4 @@
-#' make a shiny app
+#' Make a shiny app
 #'
 #'
 #' make a shiny app based on the spatial transcriptome
@@ -30,6 +30,10 @@
 #'   to the actual gene identifiers in the gene expression matrix and
 #'   \code{gene.mapping} correspond to new identifiers to map to
 #' @param shiny.prefix specify file prefix
+#' @param normalize normlize the scRNA expression data
+#' @param sp_normalize normalize the ST RNA expression data
+#' @param scmtx scRNA expression matrix
+#' @param scmeta scRNA metadata
 #' @param shiny.dir specify directory to create the shiny app in
 #' @param default.gene1 specify primary default gene to show
 #' @param default.gene2 specify secondary default gene to show
@@ -38,7 +42,7 @@
 #'
 #'
 #'
-#' @return data files required for shiny app
+#' @return data files and codes required for shiny app
 #'
 #'
 #'
@@ -72,6 +76,7 @@ CreateshinySRT <- function(dat,
                           scmtx = NULL,
                           scmeta = NULL,
                           normalize = T,
+                          sp_normalize = T,
                           colcluster = NULL,
                           sp_cols = NULL,
                           default.gene1 = NA,
@@ -90,6 +95,7 @@ CreateshinySRT <- function(dat,
     scmtx = scmtx,
     scmeta = scmeta,
     normalize = normalize,
+    sp_normalize = sp_normalize,
     colcluster = colcluster,
     sp_cols = sp_cols,
     default.gene1 = default.gene1,

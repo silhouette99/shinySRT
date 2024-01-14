@@ -17,6 +17,7 @@ preparedata_shinyspatial(
   scmtx = NULL,
   scmeta = NULL,
   normalize = T,
+  sp_normalize = T,
   colcluster = NULL,
   sp_cols = NULL,
   default.gene1 = NA,
@@ -56,6 +57,14 @@ can supply a named vector where \code{names(gene.mapping)} correspond
 to the actual gene identifiers in the gene expression matrix and
 \code{gene.mapping} correspond to new identifiers to map to}
 
+\item{scmtx}{scRNA expression matrix}
+
+\item{scmeta}{scRNA metadata}
+
+\item{normalize}{normlize the scRNA expression data}
+
+\item{sp_normalize}{normalize the ST RNA expression data}
+
 \item{default.gene1}{specify primary default gene to show}
 
 \item{default.gene2}{specify secondary default gene to show}
@@ -66,6 +75,9 @@ show in bubbleplot / heatmap}
 \item{shiny.prefix}{specify file prefix}
 }
 \description{
+This function could generate data files for shiny app by saptial transcriptomic data, e.g. matrix, metadata, coordination, H&E images.
+}
+\details{
 Generate data files required for shiny app.Six files will be generated,
 (1) shinySRT config \code{meta_group.Rds}
 (2) the gene mapping object config \code{genesets.Rds}

@@ -15,8 +15,8 @@ scran_hvg(
 )
 }
 \arguments{
-\item{pamtx}{normalized data matrix}
+\item{mtx}{normalized data matrix}
 }
 \description{
-Find highly variable gene
+Identifies features
 }

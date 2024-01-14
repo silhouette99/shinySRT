@@ -29,9 +29,17 @@ ui_load <- function() {
   )
 }
 ## ui header
-ui_head <- function(title){
-  glue::glue(
-    
+ui_head <- function(title,df_select){
+  if(length(df_select$cell) > 0){
+    mm = ','
+    dsc <- '\n      menuItem(\"Deconvolusion\", tabName = \"deconv\", icon = icon(\"flag\"))\n'
+  }else{
+    mm = ''
+    dsc <- '\n'
+  }
+  
+  
+  til<- glue::glue(
     '### Start server code\n',
     'ui <- dashboardPage(\n',
     '  ### project title\n',
@@ -44,8 +52,10 @@ ui_head <- function(title){
     '      menuItem(\"GeneExpr vs GeneExpr\",tabName = \"d_gene_ex\",icon = icon(\"sun\")),\n',
     '      menuItem(\"Viol / Box data chart\",tabName = \"vio\",icon = icon(\"desktop\")),\n',
     '      menuItem(\"Portion chart\", tabName = \"portion\", icon = icon(\"bars\")),\n',
-    '      menuItem(\"Heat / Dot plot\", tabName = \"heatdot\", icon = icon(\"gear\")),\n',
-    '      menuItem(\"Deconvolusion\", tabName = \"deconv\", icon = icon(\"flag\"))),\n',
+    '      menuItem(\"Heat / Dot plot\", tabName = \"heatdot\", icon = icon(\"gear\")){mm}\n'
+  )
+  
+  til2 <- paste0(
     '    ### import new spot information\n',
     '    shiny::selectizeInput(inputId = \"new_title\",\n',
     '      label = \'group name\',choices = NULL,\n',
@@ -58,6 +68,9 @@ ui_head <- function(title){
     '      label = \'spots size\',min = 0,\n',
     '      ticks = FALSE,max = 1,value = 1)),\n\n'
   )
+  
+  ui_head <- paste0(til, dsc, '               ),\n',til2)
+  glue::glue(ui_head)
 }
 ## page1 head
 ui_p1 <- function(df_select){
@@ -151,12 +164,18 @@ ui_p1 <- function(df_select){
     eachr <- eachr[eachr <= slices]
     ft_for <- lapply(eachr, function(eachc){
       if(eachc == max(eachr)){
-        m ='))),' 
+        m ='))' 
       }else{
         m = '),'
       }
-      
-      glue::glue(
+      if(l == max(nr) & eachc == max(eachr)){
+        ls ='),' 
+      }else if(eachc == max(eachr)){
+        ls = ','
+      }else{
+        ls = ''
+      }
+      fs <- glue::glue(
         '             column({nc},style = \"border-right: 2px solid black\",\n',
         '              box(width = 12,collapsible = T,collapsed = F,\n',
         '               title = paste(unique(df_select$slice)[{eachc}], \'feature\'),\n',
@@ -171,8 +190,11 @@ ui_p1 <- function(df_select){
         '                     width = \"138px\", min = 4,max = 20,value = 6,step = 0.5)),\n',
         '                  div(style = \"display:inline-block\",\n',
         '                    numericInput(\"ft_spot{eachc}.w\",\"PDF / PNG width:\",\n',
-        '                     width = \"138px\",min = 4,max = 20,value = 12,step = 0.5)))){m}\n\n',
+        '                     width = \"138px\",min = 4,max = 20,value = 12,step = 0.5)))){m}{ls}\n\n',
       )
+      
+      
+      
       
     }) %>% unlist()%>%paste(collapse = '')
     ft_for <- paste('fluidRow(\n',ft_for)
@@ -275,6 +297,11 @@ ui_p2 <- function(df_select) {
       } else{
         m = ','
       }
+      if(eachc == max(eachr) & l != max(nr)){
+        ls = ','
+      }else{
+        ls = ''
+      }
       glue::glue(
         '           column({nc},style = \"border-right: 2px solid black\",\n',
         '           box(width = 12,collapsible = T,\n',
@@ -293,7 +320,7 @@ ui_p2 <- function(df_select) {
         '               div(style = \"display:inline-block\",\n',
         '                numericInput(\"coexpfeature{eachc}.w\", \"PDF / PNG width:\",\n',
         '                 width = \"138px\",min = 4,\n',
-        '                 max = 20,value = 12,step = 0.5))))){m}\n\n',
+        '                 max = 20,value = 12,step = 0.5))))){m}{ls}\n\n',
       )
       
     }) %>% unlist() %>% paste(collapse = '')
@@ -634,7 +661,7 @@ ui_p6 <- function(df_select){
     '      solidHeader = TRUE,collapsible = TRUE,\n',
     '      DTOutput(outputId = \'statis_deconv\')))),\n',
     '      tabBox(title = \'Chart\',selected = \'Pie\',width = 6,\n',
-    '      tabPanel(\'Pie\',ggiraph::girafeOutput(outputId = \'de_pie_plot\', height = 500),\n',
+    '      tabPanel(\'Pie\',\'Demonstrate the cellular components of the selected region\',ggiraph::girafeOutput(outputId = \'de_pie_plot\', height = 500),\n',
     '         fluidRow(column(6,br(),downloadButton(\"de_pie_plot.pdf\", \"Download PDF\"),downloadButton(\"de_pie_plot.png\", \"Download PNG\")),\n',
     '          column(6,\n',
     '            div(style = \"display:inline-block\",\n',
@@ -644,7 +671,7 @@ ui_p6 <- function(df_select){
     '            numericInput(\"de_pie_plot.w\",\"PDF / PNG width:\",\n',
     '             width = \"138px\",min = 4,max = 20,value = 12,step = 0.5))\n',
     '            ))),\n',
-    '      tabPanel(\'Vln\',ggiraph::girafeOutput(outputId = \'de_vln_plot\', height = 500),\n',
+    '      tabPanel(\'Vln\',\'Showing the scoring of each cell type in the selected region\',ggiraph::girafeOutput(outputId = \'de_vln_plot\', height = 500),\n',
     '         fluidRow(column(6,br(),downloadButton(\"de_vln_plot.pdf\", \"Download PDF\"),downloadButton(\"de_vln_plot.png\", \"Download PNG\")),\n',
     '          column(6,\n',
     '            div(style = \"display:inline-block\",\n',
@@ -654,7 +681,7 @@ ui_p6 <- function(df_select){
     '            numericInput(\"de_vln_plot.w\",\"PDF / PNG width:\",\n',
     '             width = \"138px\",min = 4,max = 20,value = 12,step = 0.5))\n',
     '            ))),\n',
-    '      tabPanel(\'Den\',ggiraph::girafeOutput(outputId = \'de_den_plot\', height = 500),\n',
+    '      tabPanel(\'Den\',\'Demonstrate the distribution of scoring by cell type in the selected region\',ggiraph::girafeOutput(outputId = \'de_den_plot\', height = 500),\n',
     '         fluidRow(column(6,br(),downloadButton(\"de_den_plot.pdf\", \"Download PDF\"),downloadButton(\"de_den_plot.png\", \"Download PNG\")),\n',
     '          column(6,\n',
     '            div(style = \"display:inline-block\",\n',

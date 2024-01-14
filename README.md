@@ -78,7 +78,9 @@ pacman::p_load(
   'DT',
   'shinydashboard',
   'scran',
-  'scatterpie'
+  'scatterpie',
+  'quadprog',
+  'Rfast'
 )
 
 ```
@@ -166,6 +168,12 @@ The fifth module shows the expression of genes in different regions by means of 
 
 
 ![](image/content5-1.png)
+
+
+ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html).
+
+
+![](image/content6-2.png)
 
 
 ---

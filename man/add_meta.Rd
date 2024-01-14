@@ -13,6 +13,9 @@ add_meta(add_meta, dirs = "shinyspatial_app", colname = "new_group")
 
 \item{colname}{group names, if add_meta is the data frame, colname could be used to identify the column of add_meta}
 }
+\value{
+meta.Rds and meta_group.Rds have new groups
+}
 \description{
 add some information into meta.Rds and meta_group.Rds
 }

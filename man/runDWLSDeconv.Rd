@@ -28,6 +28,9 @@ runDWLSDeconv(
 
 \item{number}{of cells per spot}
 }
+\value{
+data.table of cellular component
+}
 \description{
-Deconvolusion of Giotto in shinySRT
+This function could be used to predict the cellular component of each spots, refering to Giotto's DWLS deconvolusion function.
 }

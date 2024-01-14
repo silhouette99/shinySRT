@@ -2,7 +2,7 @@
 % Please edit documentation in R/deconvolusiondwls.R
 \name{scran_norm}
 \alias{scran_norm}
-\title{scran normalization}
+\title{Scran normalization}
 \usage{
 scran_norm(
   mymatrix,
@@ -20,6 +20,9 @@ scran_norm(
 
 \item{logbase}{base used for log normalization}
 }
+\value{
+a normalized data matrix
+}
 \description{
-scran normalization
+Normalize the count data present in a given assay.
 }
