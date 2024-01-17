@@ -1549,8 +1549,8 @@ sp_server_p1 <- function(df_select){
   sg <- c('## page1\n',
           '## gene select\n',
           'updateSelectizeInput(\n',
-          '  session,\"gene\",choices = names(genesets),\n',
-          '  server = TRUE,selected = df_select$genes,\n',
+          '  session,\"gene\",choices = df_select$genes,\n',
+          '  server = TRUE,selected = df_select$gene1,\n',
           '  options = list(maxOptions = 7,\n',
           '                 create = TRUE,persist = TRUE,\n',
           '                 render = I(optCrt)))\n\n')

@@ -1,4 +1,4 @@
-## deconvolusion 
+## Deconvolusion 
 
 Users simply need to furnish the expression matrix and metadata of scRNA-seq, specifying cell types, to acquire the cellular composition results of SRT. These outcomes can be visualized on the interface. The provided example leverages single-cell data from Giotto, utilizing 10x public data for spatial transcriptomics.
 
@@ -37,3 +37,4 @@ shiny::runApp('shinySRT/shinyspatial_app')
 
 ```
 
+![](image/content7-2.png)
