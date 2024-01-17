@@ -1,21 +1,3 @@
-#' server code prepared for shinySRT
-#'
-#' Prepare the server code for shinyApp.
-#'
-#'
-#' @param shiny.dir specify directory to create the shiny app in. Default is
-#'   to create a new directory named "shinyspatial_app"
-#'
-#' 
-#'
-#'
-#'
-#'
-#' @return server code required for shiny app
-#'
-#'
-#'
-#' @export
 ## load package in server script
 lib_server <- function() {
   lib <- glue::glue(

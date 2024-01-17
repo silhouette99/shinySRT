@@ -11,7 +11,7 @@
 #' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment scran dplyr
 #' 
 #' 
-#' @return meta.Rds and meta_group.Rds have new groups
+#' @return regenerate the meta.Rds and meta_group.Rds with new groups
 #'
 #'
 #' @export

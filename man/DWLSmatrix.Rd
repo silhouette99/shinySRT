@@ -11,10 +11,10 @@ DWLSmatrix(matrix, sign_gene, cell_cols, meta)
 
 \item{sign_gene}{signature gene}
 
-\item{cell_cols}{colums of cell type}
+\item{cell_cols}{colums of meta}
 
 \item{meta}{scRNA-seq meta}
 }
 \description{
-This function uses the hvg of each cell type as cell type signatures
+This function finds the hvg of each cell type as cell type signatures
 }

@@ -242,12 +242,12 @@ scran_hvg <- function(mtx,
 #' 
 #' Get DWLS signature gene-cell matrix for deconvolusion
 #' 
-#' This function uses the hvg of each cell type as cell type signatures
+#' This function finds the hvg of each cell type as cell type signatures
 #' 
 #' 
 #' @param matrix normalized scRNA-seq matrix
 #' @param sign_gene signature gene
-#' @param cell_cols colums of cell type
+#' @param cell_cols colums of meta
 #' @param meta scRNA-seq meta
 #'
 #'@export

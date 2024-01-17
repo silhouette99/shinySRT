@@ -37,4 +37,5 @@ shiny::runApp('shinySRT/shinyspatial_app')
 
 ```
 
+
 ![](image/content7-2.png)

@@ -1,16 +1,4 @@
-#' ui code prepared for shinySRT
-#'
-#'
-#'
-#' @param df_select default information to provide the slice number
-#'
-#'
-#' ui_load : load package in ui scirpts
-#' ui_head : with web's header and menu
-#'
-#' @return data files required for shiny app
-#'
-#' @export
+
 ## loaded library
 ui_load <- function() {
   glue::glue(
