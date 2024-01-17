@@ -102,15 +102,15 @@ library(Seurat)
 library(SeuratData)
 
 InstallData("stxBrain")
-brain <- LoadData("stxBrain"， type = "anterior1")
+brain <- LoadData("stxBrain", type = "anterior1")
 
-CreateshinySRT(brain,title = 'shinySRT exmaple')
+CreateshinySRT(brain,title = 'shinySRT exmaple', sp_normalize = F, gene.mapping = F)
 
 # SpatialExperiment
 library(SpatialExperiment)
 example(read10xVisium, echo = FALSE)
 
-CreateshinySRT(spe,title = 'shinySRT exmaple',gex.assay = 'counts')
+CreateshinySRT(spe,title = 'shinySRT exmaple',maxlevel = 20)
 
 # run shiny app
 shiny::runApp('shinyspatial_app/')
@@ -123,7 +123,7 @@ The SRT was processed using scanpy to obtain the h5ad file, while the following 
 
 ``` r
 # h5ad
-CreateshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment')
+CreateshinySRT(dat = 'Anterior.h5ad',title = 'spatial experiment', sp_normalize = F)
 
 # run shiny app
 shiny::runApp('shinyspatial_app/')
@@ -170,7 +170,7 @@ The fifth module shows the expression of genes in different regions by means of 
 ![](image/content5-1.png)
 
 
-ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html).
+ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html). Please refer to [deconvolusion](docs/deconvolusion.md) for specific instructions.
 
 
 ![](image/content6-2.png)
