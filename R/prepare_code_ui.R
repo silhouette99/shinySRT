@@ -94,12 +94,12 @@ ui_p1 <- function(df_select){
   slices <- length(unique(df_select$slice))
   if(slices <= 4){
     nr = 1
-    if(slices <= 2){
-      nc = 6
-    }else{
-      nc = 12/slices
-    }
-    
+    # if(slices <= 2){
+    #   nc = 6
+    # }else{
+    #   nc = 12/slices
+    # }
+    nc = 12/slices
   }else{
     nr = ceiling(slices/4)
     nc = 3
@@ -215,28 +215,29 @@ ui_p2 <- function(df_select) {
   slices <- length(unique(df_select$slice))
   if (slices <= 4) {
     nr = 1
-    if (slices <= 2) {
-      nc = 6
-    } else{
-      nc = 12 / slices
-    }
+    # if (slices <= 2) {
+    #   nc = 6
+    # } else{
+    #   nc = 12 / slices
+    # }
+    nc = 12 / slices
   } else{
     nr = ceiling(slices / 4)
     nc = 3
   }
-  slices <- length(unique(df_select$slice))
-  if (slices <= 4) {
-    nr = 1
-    if (slices <= 2) {
-      nc = 6
-    } else{
-      nc = 12 / slices
-    }
-    
-  } else{
-    nr = ceiling(slices / 4)
-    nc = 3
-  }
+  # slices <- length(unique(df_select$slice))
+  # if (slices <= 4) {
+  #   nr = 1
+  #   if (slices <= 2) {
+  #     nc = 6
+  #   } else{
+  #     nc = 12 / slices
+  #   }
+  #   
+  # } else{
+  #   nr = ceiling(slices / 4)
+  #   nc = 3
+  # }
   ## bgplot
   bg_for <- lapply(1:nr, function(l) {
     eachr <- 1:4+4*(l-1)
@@ -330,7 +331,7 @@ ui_p3 <- function(df_select){
     '        fluidRow(column(12, \n',
     '        fluidRow(\n',
     '         column(3,style = \"border-right: 2px solid black\",\n',
-    '          box(width = 12,br(),br(),\n',
+    '          box(width = 12,br(),\n',
     '           fluidRow(\n',
     '            shiny::selectizeInput(\n',
     '              inputId = \"vio_x\",label = \'Spot information - x\',choices = meta_group[info == T, group],\n',
@@ -352,9 +353,9 @@ ui_p3 <- function(df_select){
     '                label = \'subset spot\',\n',
     '                choices = meta_group$group,\n',
     '                selected = \'seurat_clusters\',\n',
-    '                multiple = F,options = list(create = TRUE))),br(),br(),\n',
+    '                multiple = F,options = list(create = TRUE))),\n',
     '            fluidRow(column(12,shiny::actionButton(inputId = \"reset3\",\n',
-    '                icon = icon(\"refresh\"),label = \"reset all\"))),\n',
+    '                icon = icon(\"refresh\"),label = \"reset all\"))),br(),\n',
     '             fluidRow(h4(strong(\'Vlnplot/Boxplot\')),\n',
     '                column(12, fluidRow(\n',
     '                   column(6,br(),downloadButton(\"vb_spot.pdf\", \"Download PDF\"),\n',
@@ -368,7 +369,7 @@ ui_p3 <- function(df_select){
     '                       width = \"138px\",min = 4,\n',
     '                       max = 20,value = 12,step = 0.5)))))))),\n',
     '         column(9,column(12,\n',
-    '           box(width = 12,height = 780,status = \"primary\",\n',
+    '           box(width = 12,height = 760,status = \"primary\",\n',
     '             solidHeader = TRUE,ggiraph::girafeOutput(outputId = \'vb_plot\', height = 700))))),\n'
   )
   ui_p3_head <- paste(ui_p3_head,collapse = '')
@@ -376,12 +377,12 @@ ui_p3 <- function(df_select){
   slices <- length(unique(df_select$slice))
   if(slices <= 4){
     nr = 1
-    if(slices <= 2){
-      nc = 6
-    }else{
-      nc = 12/slices
-    }
-    
+    # if(slices <= 2){
+    #   nc = 6
+    # }else{
+    #   nc = 12/slices
+    # }
+    nc = 12 / slices
   }else{
     nr = ceiling(slices/4)
     nc = 3
@@ -469,8 +470,8 @@ ui_p4 <- function(df_select){
     '                  \"PDF / PNG width:\",\n',
     '                  width = \"138px\",\n',
     '                  min = 4,max = 20,\n',
-    '                  value = 12,step = 0.5)))))))),\n',
-    '       column(9,fluidRow(column(12,box(width = 12,height = 780,\n',
+    '                  value = 12,step = 0.5))))))),br(),),\n',
+    '       column(9,fluidRow(column(12,box(width = 12,height = 740,\n',
     '         status = \"primary\",solidHeader = TRUE,\n',
     '         ggiraph::girafeOutput(outputId = \'por_plot\', height = 700)))))),\n'
   )
@@ -479,11 +480,12 @@ ui_p4 <- function(df_select){
   slices <- length(unique(df_select$slice))
   if (slices <= 4) {
     nr = 1
-    if (slices <= 2) {
-      nc = 6
-    } else{
-      nc = 12 / slices
-    }
+    # if (slices <= 2) {
+    #   nc = 6
+    # } else{
+    #   nc = 12 / slices
+    # }
+    nc = 12 / slices
     
   } else{
     nr = ceiling(slices / 4)
@@ -526,40 +528,40 @@ ui_p5 <- function(df_select){
   ui_p5_head <- c(
     '      tabItem(tabName = \"heatdot\",h2(strong(HTML(\"Gene expression heatmap/dotplot\"))),\n',
     '       h4(\'In this tab, users can visualise the gene expression patterns of multiple genes grouped by categorical spot information (e.g. library / cluster).\'),\n',
-    '       \'The normalised expression are averaged, log-transformed and then plotted.\',br(),br(),\n',
+    '       \'The normalised expression are averaged, log-transformed and then plotted.\',\n',
     '       fluidRow(column(12, fluidRow(\n',
     '       column(3,style = \"border-right: 2px solid black\",\n',
-    '       box(width = 12,br(),br(),\n',
+    '       box(width = 12,\n',
     '        fluidRow(\n',
     '         textAreaInput(\"inpgenelist\", HTML(\"List of gene names <br />(Max 50 genes, separated <br />by , or ; or newline):\"),\n',
-    '          height = \"200px\",value = paste0(df_select$genes, collapse = \", \")) %>%\n',
+    '          height = \"140px\",value = paste0(df_select$genes, collapse = \", \")) %>%\n',
     '          helper(type = \"inline\",size = \"m\",fade = TRUE,\n',
     '           title = \"List of genes to plot on bubbleplot / heatmap\",\n',
     '           content = c(\"Input genes to plot\",\n',
     '            \"- Maximum 50 genes (due to ploting space limitations)\",\n',
-    '            \"- Genes should be separated by comma, semicolon or newline\"))),br(),\n',
+    '            \"- Genes should be separated by comma, semicolon or newline\"))),\n',
     '        fluidRow(shiny::selectizeInput(inputId = \"expgroup\",\n',
     '          label = \'Group by:\',choices = meta_group[info == T, group],\n',
     '          selected = df_select$meta1,multiple = FALSE,\n',
-    '          options = list(create = TRUE))),br(),\n',
+    '          options = list(create = TRUE))),\n',
     '        shiny::radioButtons(\"exp_plot_type\",\n',
     '          \"Plot type:\",choices = c(\"dotplot\", \"heatmap\"),\n',
     '          selected = \"dotplot\",inline = TRUE),\n',
     '        checkboxInput(\"scl_exp\", \"Scale gene expression\", value = TRUE),\n',
     '        checkboxInput(\"rclust\", \"Cluster rows (gene)\", value = TRUE),\n',
-    '        checkboxInput(\"cclust\", \"Cluster columns (sample)\", value = FALSE),br(),\n',
+    '        checkboxInput(\"cclust\", \"Cluster columns (sample)\", value = FALSE),\n',
     '        fluidRow(shiny::selectizeInput(inputId = \"scgroup\",\n',
     '          label = \'Second Group by:\',choices = meta_group[info == T, group],\n',
     '          selected = NULL,multiple = FALSE,\n',
-    '          options = list(create = TRUE))),br(),\n',
+    '          options = list(create = TRUE))),\n',
     '        fluidRow(shiny::selectizeInput(inputId = \"subspot3\",\n',
     '          label = \'subset spot\',choices = meta_group[info == T, group],\n',
     '          selected = df_select$meta1,\n',
-    '          multiple = F,options = list(create = TRUE))),br(),\n',
+    '          multiple = F,options = list(create = TRUE))),\n',
     '        fluidRow(column(12,shiny::actionButton(inputId = \"reset5\",\n',
     '                 icon = icon(\"refresh\"),label = \"reset all\"))),\n',
     '        fluidRow(h4(strong(\'Dotplot / Heatmap\')), column(12,\n',
-    '         fluidRow(column(6,br(),\n',
+    '         fluidRow(column(6,\n',
     '           downloadButton(\"heat_spot.pdf\", \"Download PDF\"),\n',
     '           downloadButton(\"heat_spot.png\", \"Download PNG\")),\n',
     '           column(6,\n',
@@ -570,7 +572,7 @@ ui_p5 <- function(df_select){
     '             numericInput(\"heat_spot.w\",\"PDF / PNG width:\",\n',
     '             width = \"138px\", min = 4,max = 20,value = 12,step = 0.5)))))))),\n',
     '       column(9,fluidRow(column(12,\n',
-    '           box(width = 12,height = 880,status = \"primary\",\n',
+    '           box(width = 12,height = 870,status = \"primary\",\n',
     '             solidHeader = TRUE,plotOutput(outputId = \'exp_plot\', height = 800)))))),\n'
   )
   
@@ -579,12 +581,12 @@ ui_p5 <- function(df_select){
   slices <- length(unique(df_select$slice))
   if (slices <= 4) {
     nr = 1
-    if (slices <= 2) {
-      nc = 6
-    } else{
-      nc = 12 / slices
-    }
-    
+    # if (slices <= 2) {
+    #   nc = 6
+    # } else{
+    #   nc = 12 / slices
+    # }
+    nc = 12 / slices
   } else{
     nr = ceiling(slices / 4)
     nc = 3
@@ -684,11 +686,12 @@ ui_p6 <- function(df_select){
   slices <- length(unique(df_select$slice))
   if(slices <= 4){
     nr = 1
-    if(slices <= 2){
-      nc = 6
-    }else{
-      nc = 12/slices
-    }
+    # if(slices <= 2){
+    #   nc = 6
+    # }else{
+    #   nc = 12/slices
+    # }
+    nc = 12 / slices
   }else{
     nr = ceiling(slices/4)
     nc = 3
