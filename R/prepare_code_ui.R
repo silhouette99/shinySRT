@@ -603,7 +603,7 @@ ui_p5 <- function(df_select){
       }
       
       glue::glue(
-        '       column(6,box(width = 12,height = df_select$boxsize,collapsible = T,\n',
+        '       column({nc},box(width = 12,height = df_select$boxsize,collapsible = T,\n',
         '           title = paste(unique(df_select$slice)[{eachc}], \'spot selected\'),\n',
         '           status = \"primary\",solidHeader = TRUE,\n',
         '           ggiraph::girafeOutput(outputId = \'exp_bg_plot{eachc}\'))){m}\n'

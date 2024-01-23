@@ -8,7 +8,7 @@
 #' @param colname group names, if add_meta is the data frame, colname could be used to identify the column of add_meta
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment scran dplyr
+#' @import data.table hdf5r reticulate dplyr Seurat SummarizedExperiment scran dplyr scatterpie
 #' 
 #' 
 #' @return regenerate the meta.Rds and meta_group.Rds with new groups

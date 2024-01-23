@@ -44,7 +44,7 @@
 #'
 #' @return data files and codes required for shiny app
 #'
-#'
+#' @import data.table hdf5r reticulate dplyr Seurat SummarizedExperiment quadprog Rfast scran scatterpie
 #'
 #' @examples
 #' CreateshinySRT(

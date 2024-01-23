@@ -55,7 +55,7 @@
 #'
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment scran
+#' @import data.table hdf5r reticulate dplyr Seurat SummarizedExperiment scran scatterpie
 #'
 #'
 #' @examples

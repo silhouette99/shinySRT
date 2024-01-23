@@ -11,8 +11,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends:
-    SingleCellExperiment,
-    SpatialExperiment,
     data.table,
     dplyr,
     glue,
@@ -23,5 +21,29 @@ Depends:
     quadprog,
     SummarizedExperiment,
     Rfast,
-    Seurat
+    Seurat,
+    ggplot2,
+    graphics,
+    gridExtra,
+    patchwork,
+    RColorBrewer,
+    maps,
+    Cairo,
+    grid,
+    ggtree,
+    aplot,
+    magrittr,
+    ggrepel,
+    ggdendro,
+    Matrix,
+    scales,
+    aplot,
+    keys,
+    ggiraph,
+    ggpubr,
+    shiny,
+    shinyhelper,
+    DT,
+    shinydashboard,
+    scatterpie
     

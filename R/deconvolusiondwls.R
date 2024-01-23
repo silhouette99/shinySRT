@@ -16,7 +16,7 @@
 #' @return data.table of cellular component 
 #'
 #'
-#' @import data.table hdf5r reticulate dplyr SpatialExperiment SingleCellExperiment Seurat SummarizedExperiment quadprog Rfast scran
+#' @import data.table hdf5r reticulate dplyr Seurat SummarizedExperiment quadprog Rfast scran scatterpie
 #'
 #'
 #' @export
