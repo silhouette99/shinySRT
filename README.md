@@ -40,7 +40,7 @@ Users could deploy their application utilizing a customized list that includes a
 
 ## Installation
 
-To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed:
+To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed (The best version of R is 4.0 or above, to prevent some R packages are not good to install or incompatibility):
 
 ``` r
 if (!require('pacman')) install.packages('pacman')
