@@ -853,9 +853,9 @@ preparedata_shinyspatial <- function(dat,
   ## gene mapping(ensembl id to symbol id)
   if (gene.mapping[1] == TRUE) {
     if (sum(grepl("^ENSG000", gex.rownm)) >= sum(grepl("^ENSMUSG000",gex.rownm))) {
-      tmp1 = fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
+      tmp1 = data.table::fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
     } else {
-      tmp1 = fread(system.file("extdata",'mm_map.txt.gz',package = 'shinySRT'))
+      tmp1 = data.table::fread(system.file("extdata",'mm_map.txt.gz',package = 'shinySRT'))
     }
     gene.mapping = tmp1$GeneName
     names(gene.mapping) = tmp1$EnsemblID
@@ -1170,9 +1170,9 @@ preparedata_shinyspatial <- function(dat,
     
     if(sum(grepl("^ENSG000", gex.rownm)) > 0 | sum(grepl("^ENSMUSG000",gex.rownm)) > 0){
       if (sum(grepl("^ENSG000", gex.rownm)) >= sum(grepl("^ENSMUSG000",gex.rownm))) {
-        tmp1 = fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
+        tmp1 = data.table::fread(system.file("extdata",'hg_map.txt.gz',package = 'shinySRT'))
       } else {
-        tmp1 = fread(system.file("extdata",'mm_map.txt.gz',package = 'shinySRT'))
+        tmp1 = data.table::fread(system.file("extdata",'mm_map.txt.gz',package = 'shinySRT'))
       }
       gene_mapping = tmp1$GeneName
       names(gene_mapping) = tmp1$EnsemblID

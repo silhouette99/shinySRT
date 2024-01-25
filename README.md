@@ -83,6 +83,8 @@ pacman::p_load(
   'Rfast'
 )
 
+
+devtools::install_github('silhouette99/ShinySRT')
 ```
 
 
