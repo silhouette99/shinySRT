@@ -26,7 +26,7 @@ lib_server <- function() {
     'library(aplot)\n',
     'library(ggiraph)\n',
     'library(scatterpie)\n',
-    'library(ggpubr)\n\n',
+    'library(ggpubr)\n\n'
   )
   return(lib)
 }
