@@ -1546,7 +1546,7 @@ sp_server_p1 <- function(df_select){
       '  add_meta$meta$sampleID[which(\n',
       '    add_meta$meta[[input$meta1_select]] %in% unique(c(input$bg_plot{x}_selected)) &\n',
       '      add_meta$meta[[\'slice_sample\']] %in% strsplit(meta_group_add$meta$unit[which(meta_group_add$meta$group == \'slice_sample\')], split = \'\\\\|\')[[1]][{x}]\n',
-      '  )]\n\n',
+      '  )]\n\n'
     )
   })
   loadedsp <-
