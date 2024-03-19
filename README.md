@@ -84,7 +84,7 @@ pacman::p_load(
 )
 
 
-devtools::install_github('silhouette99/ShinySRT')
+devtools::install_github('silhouette99/shinySRT')
 ```
 
 
