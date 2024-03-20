@@ -178,7 +178,7 @@ ui_p1 <- function(df_select){
         '                     width = \"138px\", min = 4,max = 20,value = 6,step = 0.5)),\n',
         '                  div(style = \"display:inline-block\",\n',
         '                    numericInput(\"ft_spot{eachc}.w\",\"PDF / PNG width:\",\n',
-        '                     width = \"138px\",min = 4,max = 20,value = 12,step = 0.5)))){m}{ls}\n\n',
+        '                     width = \"138px\",min = 4,max = 20,value = 12,step = 0.5)))){m}{ls}\n\n'
       )
       
       
@@ -254,7 +254,7 @@ ui_p2 <- function(df_select) {
         '           box(width = 12,collapsible = T,\n',
         '            title = paste(unique(df_select$slice)[{eachc}], \'spot selected\'),\n',
         '            status = \"primary\",solidHeader = TRUE,\n',
-        '             ggiraph::girafeOutput(outputId = \'bg_plot_f{eachc}\',height = df_select$image_size))){m}\n\n',
+        '             ggiraph::girafeOutput(outputId = \'bg_plot_f{eachc}\',height = df_select$image_size))){m}\n\n'
       )
       
     }) %>% unlist() %>% paste(collapse = '')
@@ -309,7 +309,7 @@ ui_p2 <- function(df_select) {
         '               div(style = \"display:inline-block\",\n',
         '                numericInput(\"coexpfeature{eachc}.w\", \"PDF / PNG width:\",\n',
         '                 width = \"138px\",min = 4,\n',
-        '                 max = 20,value = 12,step = 0.5))))){m}{ls}\n\n',
+        '                 max = 20,value = 12,step = 0.5))))){m}{ls}\n\n'
       )
       
     }) %>% unlist() %>% paste(collapse = '')
@@ -407,7 +407,7 @@ ui_p3 <- function(df_select){
         '            solidHeader = TRUE,\n',
         '            ggiraph::girafeOutput(\n',
         '              outputId = \'vb_bg_plot{eachc}\',\n',
-        '              height = df_select$image_size))){m}\n',
+        '              height = df_select$image_size))){m}\n'
       )
       
     }) %>% unlist()%>%paste(collapse = '')
@@ -507,7 +507,7 @@ ui_p4 <- function(df_select){
         '          title = paste(unique(df_select$slice)[{eachc}], \'spot selected\'),\n',
         '          status = \"primary\",solidHeader = TRUE,\n',
         '          ggiraph::girafeOutput(outputId = \'por_bg_plot{eachc}\',\n',
-        '           height = df_select$image_size))){m}\n\n',
+        '           height = df_select$image_size))){m}\n\n'
       )
       
     }) %>% unlist() %>% paste(collapse = '')
@@ -725,7 +725,7 @@ ui_p6 <- function(df_select){
         '              div(style = \"display:inline-block\",\n',
         '                numericInput(\"de_pct_spot{eachc}.w\",\n',
         '                  \"PDF / PNG width:\", width = \"138px\",\n',
-        '                  min = 4,max = 20,value = 12,step = 0.5))))){m}\n\n',
+        '                  min = 4,max = 20,value = 12,step = 0.5))))){m}\n\n'
       )
     }) %>% unlist()%>%paste(collapse = '')
     
