@@ -1805,7 +1805,7 @@ sp_server_p3 <- function(df_select){
     '## page3 ############################################\n',
     'updateSelectizeInput(\n',
     '  session,\"vio_y\",choices = names(genesets),\n',
-    '  server = TRUE,selected = df_select$genes,\n',
+    '  server = TRUE,selected = df_select$gene1,\n',
     '  options = list(maxOptions = 10,\n',
     '  create = TRUE,persist = TRUE,render = I(optCrt)))\n'
   )
