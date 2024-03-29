@@ -1,7 +1,7 @@
 # shinySRT
 
 ---
-![](image/shinysrt.png)
+
 
 ## Description
 
