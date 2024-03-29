@@ -91,9 +91,23 @@ preparedata_shinyspatial <- function(dat,
                                      default.gene2 = NA,
                                      default.multigene = NA
 ){
+  require(hdf5r)
   drExist = TRUE # image array
   dmExist = TRUE # dim matrix
-  
+  col_box <- c(
+    '#ff3030','#1e90ff','#ffd700','#ff6eb4','#bf3eff',
+    '#c1ffc1','#00ffff','#ff1493','#7fff00','#ff0000',
+    '#0000ff','#00ff00','#ffc125','#ffb5c5','#9b30ff',
+    '#54ff9f','#87ceff','#ffaeb9','#c0ff3e','#ff4040',
+    '#836fff','#00ff7f','#ffff00','#ff3e96','#ff83fa',
+    '#9aff9a','#4876ff','#ff3e96','#00f5ff','#8b1a1a',
+    '#104e8b','#008b00','#8b7500','#8b3a62','#68228b',
+    '#698b69','#008b8b','#8b0a50','#458b00','#eedfcc',
+    '#76eec6','#eec591','#dbe9e9','#8ee5ee','#ee6a50',
+    '#eee8cd','#eead0e','#bcee68','#ee7600','#8deeee',
+    '#00b2ee','#ee6363','#eeeee0','#eee685','#b2dfee',
+    '#eedc82','#ee00ee','#ee30a7','#006400'
+  )
   if (class(dat)[1] == "Seurat") {
     ## get the image array and coordination matrix
     
@@ -340,7 +354,9 @@ preparedata_shinyspatial <- function(dat,
     ima <- dat[['image']]
     
     slice_samples <- lapply(colnames(dat[['metadata']]), function(x) {
-      if (length(intersect(unique(dat[['metadata']][, x]), names(ima))) > 0) {
+      ms <- dat[['metadata']] %>% data.table::data.table()
+      unique_col <- unique(ms[[x]])
+      if (length(intersect(unique_col, names(ima))) == length(names(ima))) {
         samples <- x
       } else{
         samples <- NULL
@@ -348,12 +364,19 @@ preparedata_shinyspatial <- function(dat,
       samples
     }) %>% unlist()
     
-    ima <- ima[which(names(ima) %in% dat[['metadata']][, slice_samples[1]])]
+    # ima <- ima[which(names(ima) %in% dat[['metadata']][, slice_samples[1]])]
     coordi <- dat[['coordination']]
+    coordi <- lapply(names(coordi), function(x){
+      sub_coordi <- coordi[[x]]
+      if(length(which(colnames(sub_coordi) %in% c('imagerow','imagecol'))) < 2){
+        colnames(sub_coordi)[c(grep(pattern = 'x|X|col|Col',colnames(sub_coordi)),grep(pattern = 'y|Y|row|Row',colnames(sub_coordi)))] <- c('imagecol','imagerow')
+      }
+      sub_coordi[,slice_samples[1]] <- x
+      return(sub_coordi)
+    })
     
-    coordi <- coordi[,c(2,1)]
+    coordi <- do.call(rbind,coordi)
     
-    colnames(coordi) <- c('imagerow','imagecol')
   }else if(tolower(tools::file_ext(dat)) == "h5ad"){
     obj <- hdf5r::H5File$new(dat, mode = "r")
     
@@ -694,7 +717,7 @@ preparedata_shinyspatial <- function(dat,
       }
       Unit <- paste(levels(coordi[, x]), collapse = '|')
       color <-
-        paste(col_box()[1:length(levels(coordi[, x]))], collapse = '|')
+        paste(col_box[1:length(levels(coordi[, x]))], collapse = '|')
       metas <- data.frame(matrix(nrow = 1, ncol = 5,))
       colnames(metas) <-
         c('group', 'unit', 'color', 'info', 'default')
@@ -710,7 +733,7 @@ preparedata_shinyspatial <- function(dat,
       coordi[, x] <- factor(coordi[, x], levels = unique(coordi[, x]))
       Unit <- paste(levels(coordi[, x]), collapse = '|')
       color <-
-        paste(col_box()[1:length(levels(coordi[, x]))], collapse = '|')
+        paste(col_box[1:length(levels(coordi[, x]))], collapse = '|')
       metas <- data.frame(matrix(nrow = 1, ncol = 5,))
       colnames(metas) <-
         c('group', 'unit', 'color', 'info', 'default')
@@ -760,12 +783,25 @@ preparedata_shinyspatial <- function(dat,
     }
     
     ### data dimation
+    if(class(dat@assays[[gex.assay[1]]]) == 'Assay5'){
+      gex.matdim <- dim(dat@assays[[gex.assay[1]]])
+      gex.rownm  <- rownames(dat@assays[[gex.assay[1]]])
+      gex.colnm <- colnames(dat@assays[[gex.assay[1]]])
+    }else{
+      gex.matdim = dim(slot(dat@assays[[gex.assay[1]]], gex.slot[1]))
+      gex.rownm = rownames(slot(dat@assays[[gex.assay[1]]],
+                                gex.slot[1]))
+      gex.colnm = colnames(slot(dat@assays[[gex.assay[1]]],
+                                gex.slot[1]))
+      
+    }
     
-    gex.matdim = dim(slot(dat@assays[[gex.assay[1]]], gex.slot[1]))
-    gex.rownm = rownames(slot(dat@assays[[gex.assay[1]]],
-                              gex.slot[1]))
-    gex.colnm = colnames(slot(dat@assays[[gex.assay[1]]],
-                              gex.slot[1]))
+    if(is.null(Seurat::VariableFeatures(dat))){
+      if(length(intersect(Layers(dat),'data')) == 0){
+        dat <- NormalizeData(dat,normalization.method = 'LogNormalize')
+      }
+      dat <- FindVariableFeatures(dat,selection.method = 'vst')
+    }
     defGenes = Seurat::VariableFeatures(dat)[1:10]
     if (is.na(defGenes[1])) {
       warning(
@@ -971,11 +1007,16 @@ preparedata_shinyspatial <- function(dat,
   
   if (class(dat)[1] == "Seurat") {
     if(sp_normalize){
-      da <- scran_norm(mymatrix = slot(dat@assays[[gex.assay[1]]],
-                                        gex.slot[1]))
+      if(class(dat@assays[[gex.assay[1]]]) == 'Assay5'){
+        da <- JoinLayers(dat,assay = gex.assay[1])
+        da <- scran_norm(mymatrix = Seurat::GetAssayData(dat,slot = gex.slot[1]))
+      }else{
+        da <- scran_norm(mymatrix = slot(dat@assays[[gex.assay[1]]],
+                                         gex.slot[1]))
+      }
+      
     }else{
-      da <- slot(dat@assays[[gex.assay[1]]],
-                 gex.slot[1])
+      da <- Seurat::GetAssayData(dat,slot = gex.slot[1])
     }
     for (i in 1:floor((gex.matdim[1] - 8) / chk)) {
       mat_exp.grp.data[((i - 1) * chk + 1):(i * chk),] <-
@@ -1127,8 +1168,10 @@ preparedata_shinyspatial <- function(dat,
   if(!is.null(scmtx) & !is.null(scmeta) & length(intersect(colcluster, colnames(scmeta))) > 0){
     if (class(dat)[1] == "Seurat") {
       if (!sp_normalize) {
-        sp_mtx <- scran_norm(mymatrix = slot(dat@assays[[gex.assay[1]]],
-                                             'counts'))
+        if(class(dat@assays[[gex.assay[1]]]) == 'Assay5'){
+          dat <- JoinLayers(dat,assay = gex.assay[1])
+        }
+        sp_mtx <- scran_norm(mymatrix = Seurat::GetAssayData(dat,slot = 'counts'))
       } else {
         sp_mtx <- da
       }
@@ -1228,23 +1271,7 @@ preparedata_shinyspatial <- function(dat,
   }
 }
 
-## clusters colors displayed on shiny web
-col_box <- function(){
-  c(
-    '#ff3030','#1e90ff','#ffd700','#ff6eb4','#bf3eff',
-    '#c1ffc1','#00ffff','#ff1493','#7fff00','#ff0000',
-    '#0000ff','#00ff00','#ffc125','#ffb5c5','#9b30ff',
-    '#54ff9f','#87ceff','#ffaeb9','#c0ff3e','#ff4040',
-    '#836fff','#00ff7f','#ffff00','#ff3e96','#ff83fa',
-    '#9aff9a','#4876ff','#ff3e96','#00f5ff','#8b1a1a',
-    '#104e8b','#008b00','#8b7500','#8b3a62','#68228b',
-    '#698b69','#008b8b','#8b0a50','#458b00','#eedfcc',
-    '#76eec6','#eec591','#dbe9e9','#8ee5ee','#ee6a50',
-    '#eee8cd','#eead0e','#bcee68','#ee7600','#8deeee',
-    '#00b2ee','#ee6363','#eeeee0','#eee685','#b2dfee',
-    '#eedc82','#ee00ee','#ee30a7','#006400'
-  )
-}
+
 ## gradual change of color
 heat_col <- function(){
   c("#0000FF", "#0013FF", "#0028FF", "#003CFF", "#0050FF", "#0065FF", "#0078FF", "#008DFF", "#00A1FF", "#00B5FF",
