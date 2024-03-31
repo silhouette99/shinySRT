@@ -84,7 +84,7 @@ preparedata_shinyspatial <- function(dat,
                                      scmtx = NULL,
                                      scmeta = NULL,
                                      normalize = T,
-                                     sp_normalize = T,
+                                     sp_normalize = F,
                                      colcluster = NULL,
                                      sp_cols = NULL,
                                      default.gene1 = NA,
@@ -750,6 +750,11 @@ preparedata_shinyspatial <- function(dat,
   
   meta_group <- do.call(rbind, meta_group)
   meta_group <- data.table::data.table(meta_group)
+  
+  if(length(which(!is.na(meta_group$color) & !is.na(meta_group$unit) & meta_group$info == F)) > 0){
+    meta_group$info[which(!is.na(meta_group$color) & !is.na(meta_group$unit) & meta_group$info == F)] <- TRUE
+  }
+  
   
   def1 = grep("ident|library|Ident|Librar", meta_group$group[meta_group$info == TRUE], ignore.case = TRUE)[1]
   def2 = grep("clust|Clust", meta_group$group[meta_group$info == TRUE], ignore.case = TRUE)[1]

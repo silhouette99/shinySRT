@@ -17,7 +17,7 @@ CreateshinySRT(
   gene.mapping = F,
   scmtx = NULL,
   scmeta = NULL,
-  normalize = T,
+  normalize = F,
   sp_normalize = F,
   colcluster = NULL,
   sp_cols = NULL,

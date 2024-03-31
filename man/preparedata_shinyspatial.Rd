@@ -17,7 +17,7 @@ preparedata_shinyspatial(
   scmtx = NULL,
   scmeta = NULL,
   normalize = T,
-  sp_normalize = T,
+  sp_normalize = F,
   colcluster = NULL,
   sp_cols = NULL,
   default.gene1 = NA,

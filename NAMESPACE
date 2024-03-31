@@ -3,7 +3,6 @@
 export(CreateshinySRT)
 export(DWLSmatrix)
 export(add_meta)
-export(col_box)
 export(enrich_deconvolution)
 export(load_spatial)
 export(multi_dir_spatial)
