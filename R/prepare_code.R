@@ -25,7 +25,7 @@
 #' prepare_code(shiny.dir = 'shinyspatial_app')
 #'
 #' @export
-prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example'){
+prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example',web = F){
   
   filename = paste0(shiny.dir, "/server.R")
   df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
@@ -33,11 +33,21 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   readr::write_file(lib_server(),file = filename)
   # color
   readr::write_file(col_server(),file = filename,append = T)
-  # load data
-  readr::write_file(data_server(df_select = df_select),file = filename,append = T)
-  # function
+  if(web){
+    # load data
+    readr::write_file(data_server_web(df_select = df_select,dir = shiny.dir),file = filename,append = T)
+    # function
+    # readr::write_file(fun_server_web(),file = filename,append = T)
+    # page
+  }else{
+    # load data
+    readr::write_file(data_server(df_select = df_select),file = filename,append = T)
+    # function
+    # readr::write_file(fun_server(),file = filename,append = T)
+    # page
+  }
   readr::write_file(fun_server(),file = filename,append = T)
-  # page
+  
   readr::write_file(server_heads(df_select = df_select),file = filename,append = T)
   readr::write_file(sp_server_p1(df_select = df_select),file = filename,append = T)
   readr::write_file(sp_server_p2(df_select = df_select),file = filename,append = T)
@@ -53,7 +63,12 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   
   ##
   filename = paste0(shiny.dir, "/ui.R")
-  readr::write_file(ui_load(), file = filename)
+  if(web){
+    readr::write_file(ui_load_web(dir = shiny.dir), file = filename)
+  }else{
+    readr::write_file(ui_load(), file = filename)
+  }
+  
   readr::write_file(
     glue::glue(
       'container <- function(...) {{\n',

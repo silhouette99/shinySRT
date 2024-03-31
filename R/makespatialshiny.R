@@ -72,35 +72,53 @@ CreateshinySRT <- function(dat,
                           chunkSize = 500,
                           gex.assay = NA,
                           gex.slot = c("data", "scale.data", "counts"),
-                          gene.mapping = TRUE,
+                          gene.mapping = F,
                           scmtx = NULL,
                           scmeta = NULL,
                           normalize = T,
-                          sp_normalize = T,
+                          sp_normalize = F,
                           colcluster = NULL,
                           sp_cols = NULL,
                           default.gene1 = NA,
                           default.gene2 = NA,
-                          default.multigene = NA) {
-  preparedata_shinyspatial(
-    dat,
-    meta.to.include = meta.to.include,
-    tooltip_col = tooltip_col,
-    maxlevel = maxlevel,
-    shiny.dir = shiny.dir,
-    chunkSize = chunkSize,
-    gex.assay = gex.assay,
-    gex.slot = gex.slot,
-    gene.mapping = gene.mapping,
-    scmtx = scmtx,
-    scmeta = scmeta,
-    normalize = normalize,
-    sp_normalize = sp_normalize,
-    colcluster = colcluster,
-    sp_cols = sp_cols,
-    default.gene1 = default.gene1,
-    default.gene2 = default.gene2,
-    default.multigene = default.multigene
-  )
-  prepare_code(shiny.dir,title)
+                          default.multigene = NA,web = F) {
+  # if(web){
+  #   preparedata_web(
+  #     dat,
+  #     meta.to.include = meta.to.include,
+  #     tooltip_col = tooltip_col,
+  #     maxlevel = maxlevel,
+  #     shiny.dir = shiny.dir,
+  #     chunkSize = chunkSize,
+  #     gex.assay = gex.assay,
+  #     gex.slot = c("data", "scale.data", "counts"),
+  #     gene.mapping = F,
+  #     default.gene1 = default.gene1,
+  #     default.gene2 = default.gene2,
+  #     default.multigene = default.multigene
+  #   )
+  # }else{
+    preparedata_shinyspatial(
+      dat,
+      meta.to.include = meta.to.include,
+      tooltip_col = tooltip_col,
+      maxlevel = maxlevel,
+      shiny.dir = shiny.dir,
+      chunkSize = chunkSize,
+      gex.assay = gex.assay,
+      gex.slot = gex.slot,
+      gene.mapping = gene.mapping,
+      scmtx = scmtx,
+      scmeta = scmeta,
+      normalize = normalize,
+      sp_normalize = sp_normalize,
+      colcluster = colcluster,
+      sp_cols = sp_cols,
+      default.gene1 = default.gene1,
+      default.gene2 = default.gene2,
+      default.multigene = default.multigene
+    )
+  # }
+  
+  prepare_code(shiny.dir,title,web)
 }

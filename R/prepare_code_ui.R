@@ -16,6 +16,23 @@ ui_load <- function() {
     'df_select <- readRDS(\'df_select.Rds\')\n\n\n'
   )
 }
+
+ui_load_web <- function(dir) {
+  glue::glue(
+    'library(shiny)\n',
+    'library(shinyhelper)\n',
+    'library(shinydashboard)\n',
+    'library(data.table)\n',
+    'library(Matrix)\n',
+    'library(DT)\n',
+    'library(scales)\n',
+    'library(ggiraph)\n',
+    'meta <- readRDS(\'{dir}/meta.Rds\')\n',
+    'meta_group <- readRDS(\'{dir}/meta_group.Rds\')\n',
+    'genesets <- readRDS(\'{dir}/genesets.Rds\')\n',
+    'df_select <- readRDS(\'{dir}/df_select.Rds\')\n\n\n'
+  )
+}
 ## ui header
 ui_head <- function(title,df_select){
   if(length(df_select$cell) > 0){

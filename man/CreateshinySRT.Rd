@@ -14,16 +14,17 @@ CreateshinySRT(
   chunkSize = 500,
   gex.assay = NA,
   gex.slot = c("data", "scale.data", "counts"),
-  gene.mapping = TRUE,
+  gene.mapping = F,
   scmtx = NULL,
   scmeta = NULL,
   normalize = T,
-  sp_normalize = T,
+  sp_normalize = F,
   colcluster = NULL,
   sp_cols = NULL,
   default.gene1 = NA,
   default.gene2 = NA,
-  default.multigene = NA
+  default.multigene = NA,
+  web = F
 )
 }
 \arguments{
