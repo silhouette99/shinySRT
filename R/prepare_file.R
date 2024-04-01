@@ -755,6 +755,10 @@ preparedata_shinyspatial <- function(dat,
     meta_group$info[which(!is.na(meta_group$color) & !is.na(meta_group$unit) & meta_group$info == F)] <- TRUE
   }
   
+  if(length(which(is.na(meta_group$color) & is.na(meta_group$unit) & meta_group$info == T)) > 0){
+    meta_group$info[which(is.na(meta_group$color) & is.na(meta_group$unit) & meta_group$info == T)] <- FALSE
+  }
+  
   
   def1 = grep("ident|library|Ident|Librar", meta_group$group[meta_group$info == TRUE], ignore.case = TRUE)[1]
   def2 = grep("clust|Clust", meta_group$group[meta_group$info == TRUE], ignore.case = TRUE)[1]

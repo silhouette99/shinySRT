@@ -105,7 +105,7 @@ load_spatial <-
       }
       
       # coordination <- coordination[,c('imagerow','imagecol')]
-      if (isTRUE(x_reverse)) {
+      if (x_reverse == TRUE) {
         coordination$imagecol <- ncol(img) - coordination$imagecol
       }
       
