@@ -103,7 +103,7 @@ The primary procedure entails `shinySRT` producing the necessary configuration f
 
 ``` r
 # 10x Visim
-library(shinySRT)
+suppressMessages(library(shinySRT))
 library(Seurat)
 library(SeuratData)
 
