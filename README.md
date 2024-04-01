@@ -43,19 +43,20 @@ Users could deploy their application utilizing a customized list that includes a
 To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed (The best version of R is 4.0 or above, to prevent some R packages are not good to install or incompatibility):
 
 ``` r
-# if(!require("SingleCellExperiment", quietly = TRUE)) BiocManager::install("SingleCellExperiment")
-# if(!require("SpatialExperiment", quietly = TRUE)) BiocManager::install("SpatialExperiment")
-# if(!require("scran", quietly = TRUE)) BiocManager::install("scran")
-
-
 
 if (!require('pacman')) install.packages('pacman')
 
+devtools::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
+
+# Should you encounter any problems during this process, it is likely not a bug within ShinySRT itself, but rather an issue with one of its dependencies being incompatible.
+
 pacman::p_load(
+  'Cairo',
+  'hdf5r',
   'data.table',
+  'magrittr',
   'dplyr',
   'glue',
-  'hdf5r',
   'readr',
   'reticulate',
   'ggplot2',
@@ -64,11 +65,9 @@ pacman::p_load(
   'patchwork',
   'RColorBrewer',
   'maps',
-  'Cairo',
   'grid',
   'ggtree',
   'aplot',
-  'magrittr',
   'ggrepel',
   'ggdendro',
   'Matrix',
@@ -89,8 +88,6 @@ pacman::p_load(
   'SpatialExperiment'
 )
 
-
-devtools::install_github('silhouette99/shinySRT')
 ```
 
 
