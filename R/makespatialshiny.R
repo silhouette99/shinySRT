@@ -81,7 +81,8 @@ CreateshinySRT <- function(dat,
                           sp_cols = NULL,
                           default.gene1 = NA,
                           default.gene2 = NA,
-                          default.multigene = NA,web = F) {
+                          default.multigene = NA,web = F,
+                          tmpdir = '/srv/shiny-server/temp/') {
   # if(web){
   #   preparedata_web(
   #     dat,
@@ -116,9 +117,10 @@ CreateshinySRT <- function(dat,
       sp_cols = sp_cols,
       default.gene1 = default.gene1,
       default.gene2 = default.gene2,
-      default.multigene = default.multigene
+      default.multigene = default.multigene,
+      web = web, tmpdir = tmpdir
     )
   # }
   
-  prepare_code(shiny.dir,title,web)
+  prepare_code(shiny.dir,title,web,tmpdir)
 }

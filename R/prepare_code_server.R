@@ -76,14 +76,14 @@ data_server <- function(df_select) {
 }
 
 
-data_server_web <- function(df_select,dir) {
+data_server_web <- function(df_select,dir,tmpdir) {
   dat <- glue::glue(
     'meta <- readRDS(\'{dir}/meta.Rds\')\n',
-    'meta_group <- readRDS(\'{dir}/meta_group.Rds\')\n',
-    'genesets <- readRDS(\'{dir}/genesets.Rds\')\n',
-    'df_select <- readRDS(\'{dir}/df_select.Rds\')\n',
-    'image <- readRDS(\'{dir}/image.Rds\')\n',
-    'data = \"{dir}/data.h5\"\n',
+    'meta_group <- readRDS(\'{tmpdir}/{dir}/meta_group.Rds\')\n',
+    'genesets <- readRDS(\'{tmpdir}/{dir}/genesets.Rds\')\n',
+    'df_select <- readRDS(\'{tmpdir}/{dir}/df_select.Rds\')\n',
+    'image <- readRDS(\'{tmpdir}/{dir}/image.Rds\')\n',
+    'data = \"{tmpdir}/{dir}/data.h5\"\n',
     'meta$group <- NA\n\n\n'
   )
   

@@ -24,7 +24,8 @@ CreateshinySRT(
   default.gene1 = NA,
   default.gene2 = NA,
   default.multigene = NA,
-  web = F
+  web = F,
+  tmpdir = "/srv/shiny-server/temp/"
 )
 }
 \arguments{

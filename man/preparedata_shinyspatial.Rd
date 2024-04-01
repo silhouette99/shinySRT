@@ -22,7 +22,9 @@ preparedata_shinyspatial(
   sp_cols = NULL,
   default.gene1 = NA,
   default.gene2 = NA,
-  default.multigene = NA
+  default.multigene = NA,
+  web = F,
+  tmpdir = "/srv/shiny-server/temp/"
 )
 }
 \arguments{

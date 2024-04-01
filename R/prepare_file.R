@@ -89,7 +89,7 @@ preparedata_shinyspatial <- function(dat,
                                      sp_cols = NULL,
                                      default.gene1 = NA,
                                      default.gene2 = NA,
-                                     default.multigene = NA
+                                     default.multigene = NA,web = F,tmpdir = '/srv/shiny-server/temp/'
 ){
   require(hdf5r)
   drExist = TRUE # image array
@@ -992,6 +992,10 @@ preparedata_shinyspatial <- function(dat,
   
   
   ## expression gene matrix
+  
+  if(web){
+    shiny.dir <- paste(tmpdir, shiny.dir, sep = '/')
+  }
   
   ### Empty file
   if (!dir.exists(shiny.dir)) {

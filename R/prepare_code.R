@@ -25,7 +25,7 @@
 #' prepare_code(shiny.dir = 'shinyspatial_app')
 #'
 #' @export
-prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example',web = F){
+prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example',web = F,tmpdir = '/srv/shiny-server/temp/'){
   
   filename = paste0(shiny.dir, "/server.R")
   df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
@@ -35,7 +35,7 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   readr::write_file(col_server(),file = filename,append = T)
   if(web){
     # load data
-    readr::write_file(data_server_web(df_select = df_select,dir = shiny.dir),file = filename,append = T)
+    readr::write_file(data_server_web(df_select = df_select,dir = shiny.dir,tmpdir = tmpdir),file = filename,append = T)
     # function
     # readr::write_file(fun_server_web(),file = filename,append = T)
     # page

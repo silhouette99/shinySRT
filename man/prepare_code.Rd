@@ -7,7 +7,8 @@
 prepare_code(
   shiny.dir = "shinyspatial_app",
   title = "spatial_example",
-  web = F
+  web = F,
+  tmpdir = "/srv/shiny-server/temp/"
 )
 }
 \arguments{

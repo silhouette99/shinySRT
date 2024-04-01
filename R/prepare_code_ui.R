@@ -17,7 +17,7 @@ ui_load <- function() {
   )
 }
 
-ui_load_web <- function(dir) {
+ui_load_web <- function(dir,tmpdir) {
   glue::glue(
     'library(shiny)\n',
     'library(shinyhelper)\n',
@@ -27,10 +27,10 @@ ui_load_web <- function(dir) {
     'library(DT)\n',
     'library(scales)\n',
     'library(ggiraph)\n',
-    'meta <- readRDS(\'{dir}/meta.Rds\')\n',
-    'meta_group <- readRDS(\'{dir}/meta_group.Rds\')\n',
-    'genesets <- readRDS(\'{dir}/genesets.Rds\')\n',
-    'df_select <- readRDS(\'{dir}/df_select.Rds\')\n\n\n'
+    'meta <- readRDS(\'{tmpdir}/{dir}/meta.Rds\')\n',
+    'meta_group <- readRDS(\'{tmpdir}/{dir}/meta_group.Rds\')\n',
+    'genesets <- readRDS(\'{tmpdir}/{dir}/genesets.Rds\')\n',
+    'df_select <- readRDS(\'{tmpdir}/{dir}/df_select.Rds\')\n\n\n'
   )
 }
 ## ui header
