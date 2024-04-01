@@ -48,7 +48,8 @@ if (!require('pacman')) install.packages('pacman')
 
 devtools::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
 
-# Should you encounter any problems during this process, it is likely not a bug within ShinySRT itself, but rather an issue with one of its dependencies being incompatible.
+# Should you encounter any problems during this process, it is likely not a bug within ShinySRT itself, 
+# but rather an issue with one of its dependencies being incompatible.
 
 pacman::p_load(
   'Cairo',
