@@ -43,11 +43,15 @@ Users could deploy their application utilizing a customized list that includes a
 To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed (The best version of R is 4.0 or above, to prevent some R packages are not good to install or incompatibility):
 
 ``` r
+# if(!require("SingleCellExperiment", quietly = TRUE)) BiocManager::install("SingleCellExperiment")
+# if(!require("SpatialExperiment", quietly = TRUE)) BiocManager::install("SpatialExperiment")
+# if(!require("scran", quietly = TRUE)) BiocManager::install("scran")
+
+
+
 if (!require('pacman')) install.packages('pacman')
 
 pacman::p_load(
-  'SingleCellExperiment',
-  'SpatialExperiment',
   'data.table',
   'dplyr',
   'glue',
@@ -80,7 +84,9 @@ pacman::p_load(
   'scran',
   'scatterpie',
   'quadprog',
-  'Rfast'
+  'Rfast',
+  'SingleCellExperiment',
+  'SpatialExperiment'
 )
 
 
