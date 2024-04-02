@@ -26,9 +26,14 @@
 #'
 #' @export
 prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example',web = F,tmpdir = '/srv/shiny-server/temp/'){
+  if(web){
+    filename = paste0(tmpdir,shiny.dir, "/server.R")
+    df_select <- readRDS(paste0(tmpdir,shiny.dir,"/df_select.Rds"))
+  }else{
+    filename = paste0(shiny.dir, "/server.R")
+    df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
+  }
   
-  filename = paste0(shiny.dir, "/server.R")
-  df_select <- readRDS(paste0(shiny.dir,"/df_select.Rds"))
   # library
   readr::write_file(lib_server(),file = filename)
   # color
@@ -62,9 +67,14 @@ prepare_code <- function(shiny.dir = 'shinyspatial_app',title = 'spatial_example
   }
   
   ##
-  filename = paste0(shiny.dir, "/ui.R")
   if(web){
-    readr::write_file(ui_load_web(dir = shiny.dir), file = filename)
+    filename = paste0(tmpdir,shiny.dir, "/ui.R")
+  }else{
+    filename = paste0(shiny.dir, "/ui.R")
+  }
+  # filename = paste0(shiny.dir, "/ui.R")
+  if(web){
+    readr::write_file(ui_load_web(dir = shiny.dir,tmpdir = tmpdir), file = filename)
   }else{
     readr::write_file(ui_load(), file = filename)
   }

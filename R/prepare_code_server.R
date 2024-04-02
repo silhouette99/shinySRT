@@ -78,7 +78,7 @@ data_server <- function(df_select) {
 
 data_server_web <- function(df_select,dir,tmpdir) {
   dat <- glue::glue(
-    'meta <- readRDS(\'{dir}/meta.Rds\')\n',
+    'meta <- readRDS(\'{tmpdir}/{dir}/meta.Rds\')\n',
     'meta_group <- readRDS(\'{tmpdir}/{dir}/meta_group.Rds\')\n',
     'genesets <- readRDS(\'{tmpdir}/{dir}/genesets.Rds\')\n',
     'df_select <- readRDS(\'{tmpdir}/{dir}/df_select.Rds\')\n',

@@ -91,7 +91,7 @@ preparedata_shinyspatial <- function(dat,
                                      default.gene2 = NA,
                                      default.multigene = NA,web = F,tmpdir = '/srv/shiny-server/temp/'
 ){
-  require(hdf5r)
+  
   drExist = TRUE # image array
   dmExist = TRUE # dim matrix
   col_box <- c(
