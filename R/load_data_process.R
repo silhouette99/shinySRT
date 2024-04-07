@@ -21,7 +21,7 @@ load_spatial <-
            meta = NULL,
            coordi = NULL,
            image = NULL,
-           species = 'hg',
+           # species = 'hg',
            x_reverse = F,
            min_cells = 3,
            scale_factors_file = NULL) {
@@ -29,24 +29,37 @@ load_spatial <-
       data <- read.xlsx(matx, rowNames = T) %>% as.data.frame()
     } else{
       data <- data.table::fread(matx) %>% as.data.frame()
+      rownames(data) <- data[, 1] %>% make.unique()
+      data  <- data[, -1]
     }
+    
+    if(length(intersect(rownames(data), toupper(rownames(data)))) > length(intersect(rownames(data),HgMM_ex(rownames(data)))) | 
+       sum(grepl("^ENSG000", rownames(data))) > sum(grepl("^ENSMUSG000",rownames(data)))){
+      species <- 'hg'
+    }else{
+      species <- 'mm'
+    }
+    
     tmp = read.table(system.file("extdata", paste0(species, '_map.txt.gz'), package = 'shinySRT'),
                      header = T)
-    
-    if (length(intersect(rownames(data), tmp$EnsemblID)) == 0 |
-        length(intersect(rownames(data), tmp$GeneName)) == 0) {
-      if (length(intersect(data[, 1], tmp$EnsemblID)) > 0 |
-          length(intersect(data[, 1], tmp$GeneName)) > 0) {
-        rownames(data) <- data[, 1] %>% make.unique()
-        data  <- data[, -1]
-      } else if (length(intersect(data[, ncol(data)], tmp$EnsemblID)) > 0 |
-                 length(intersect(data[, ncol(data)], tmp$GeneName)) > 0) {
-        rownames(data) <- data[, ncol(data)] %>% make.unique()
-        data  <- data[, -ncol(data)]
-      } else{
-        stop('Can not find the geneID!')
-      }
+    if(length(intersect(tmp$EnsemblID, rownames(data))) > length(intersect(tmp$GeneName, rownames(data)))){
+      rownames(data) <- tmp[match(rownames(data),tmp$EnsemblID),'GeneName'] %>% make.unique()
     }
+    
+    # if (length(intersect(rownames(data), tmp$EnsemblID)) == 0 |
+    #     length(intersect(rownames(data), tmp$GeneName)) == 0) {
+    #   if (length(intersect(data[, 1], tmp$EnsemblID)) > 0 |
+    #       length(intersect(data[, 1], tmp$GeneName)) > 0) {
+    #     rownames(data) <- data[, 1] %>% make.unique()
+    #     data  <- data[, -1]
+    #   } else if (length(intersect(data[, ncol(data)], tmp$EnsemblID)) > 0 |
+    #              length(intersect(data[, ncol(data)], tmp$GeneName)) > 0) {
+    #     rownames(data) <- data[, ncol(data)] %>% make.unique()
+    #     data  <- data[, -ncol(data)]
+    #   } else{
+    #     stop('Can not find the geneID!')
+    #   }
+    # }
     
     object <-
       Seurat::CreateSeuratObject(data, assay = 'Spatial', min.cells = min_cells)
@@ -246,11 +259,11 @@ HgMM_ex <- function(gene) {
 #'
 #' @export
 obj_list_process <- function(obj_list,
-                             species = 'hg',
+                             # species = 'hg',
                              npcs = 20,resolution = 1) {
   multi_types <- lapply(1:length(obj_list), function(x) {
     class(obj_list[[x]])
-  })
+  }) %>% unlist()
   
   if (length(which(unique(multi_types) == 'list')) > 0) {
     extr_coordi = T
@@ -279,6 +292,12 @@ obj_list_process <- function(obj_list,
     })
     
     obj_t <- Reduce(merge, obj_list_t)
+    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t)))) | 
+       sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+      species <- 'hg'
+    }else{
+      species <- 'mm'
+    }
     obj_t <-
       seurat_sp_process(obj = obj_t, species = species, npcs = npcs,resolution = resolution)
     
@@ -335,6 +354,12 @@ obj_list_process <- function(obj_list,
     })
     
     obj_t <- Reduce(merge, obj_list_t)
+    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t)))) | 
+       sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+      species <- 'hg'
+    }else{
+      species <- 'mm'
+    }
     obj_t <-
       seurat_sp_process(obj = obj_t, species = species, npcs = npcs,resolution = resolution)
     
@@ -361,7 +386,7 @@ obj_list_process <- function(obj_list,
 #' @export
 ## load SRT data(dir)
 spatial_load_dir <- function(x,
-                             species = 'hg',
+                             # species = 'hg',
                              x_reverse = F,
                              min_cells = 3,
                              ...) {
@@ -408,7 +433,7 @@ spatial_load_dir <- function(x,
       coordi = tissue.positions.path,
       image = img_file,
       x_reverse = x_reverse,
-      species = species,
+      # species = species,
       scale_factors_file = scale_factors_file
     )
   }
@@ -434,7 +459,7 @@ spatial_load_dir <- function(x,
 #' @export
 multi_dir_spatial <-
   function(multi_dir,
-           species = 'hg',
+           # species = 'hg',
            x_reverse = F,min_cells = 3,resolution =1,
            npcs = 20) {
     if (length(dir(multi_dir)) == 0) {
@@ -443,11 +468,11 @@ multi_dir_spatial <-
     
     obj_list <- lapply(dir(multi_dir, full.names = T), function(x) {
       spatial_load_dir(x = x,
-                       species = species,
+                       # species = species,
                        x_reverse = x_reverse,min_cells = min_cells)
     })
     SRT_object <-
-      obj_list_process(obj_list, species = species, npcs = 20,resolution = resolution)
+      obj_list_process(obj_list, npcs = 20,resolution = resolution)
     return(SRT_object)
   }
 
@@ -470,18 +495,18 @@ multi_dir_spatial <-
 #' @export
 ## load SRT data(dir)
 single_op_dir <- function(dir,
-                          species = 'hg',
+                          # species = 'hg',
                           x_reverse = F,
                           min_cells = 3,resolution = 1,
                           npcs = 20) {
   object <- spatial_load_dir(
     x = dir,
-    species = species,
+    # species = species,
     x_reverse = x_reverse,
     min_cells = min_cells
   )
   SRT_object <- obj_list_process(obj_list = list(object),resolution = resolution,
-                                 species = species,
+                                 # species = species,
                                  npcs = npcs)
   return(SRT_object)
 }
@@ -512,7 +537,7 @@ single_op_file <- function(matx = NULL,
                            meta = NULL,
                            coordi = NULL,
                            image = NULL,
-                           species = 'hg',
+                           # species = 'hg',
                            x_reverse = F,
                            min_cells = 3,resolution = 1,
                            scale_factors_file = NULL,
@@ -523,13 +548,13 @@ single_op_file <- function(matx = NULL,
       meta = meta,
       coordi = coordi,
       image = image,
-      species = species,
+      # species = species,
       x_reverse = x_reverse,
       min_cells = min_cells,
       scale_factors_file = scale_factors_file
     )
   SRT_object <- obj_list_process(obj_list = list(object),resolution = resolution,
-                                 species = species,
+                                 # species = species,
                                  npcs = npcs)
   return(SRT_object)
 }
