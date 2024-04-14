@@ -226,7 +226,7 @@ CreateshinySRT(dat)
 
 ```
 
-We have also established a webpage for shinySRT where users can upload their own SRT data to generate the corresponding interface, as shown in the following figure. For detailed instructions, please refer to the webpage.
+We have also established a webpage for shinySRT where users can upload their own SRT data to generate the corresponding interface, as shown in the following figure. For detailed instructions, please refer to the [webpage](https://shinysrt.kratoss.site/apps/archive/shinySRT_display/shinyspatial_app/).
 
 
 ![](image/content777.png)
