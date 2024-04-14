@@ -44,12 +44,14 @@ To begin, it's important to verify whether the necessary installation packages f
 
 ``` r
 
+# If you employ Conda, it is imperative to install the essential packages requisite for the analysis of single-cell and spatial genomic data.
+# mamba install conda-forge::r-cairo conda-forge::r-hdf5r conda-forge::r-curl conda-forge::r-devtools conda-forge::r-biocmanager conda-forge::r-rfast conda-forge::quadprog -y
+
 if (!require('pacman')) install.packages('pacman')
 
-devtools::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
+BiocManager::install(c('scran','Seurat'))
 
-# Should you encounter any problems during this process, it is likely not a bug within ShinySRT itself, 
-# but rather an issue with one of its dependencies being incompatible.
+devtools::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
 
 pacman::p_load(
   'Cairo',
@@ -68,7 +70,6 @@ pacman::p_load(
   'maps',
   'grid',
   'ggtree',
-  'aplot',
   'ggrepel',
   'ggdendro',
   'Matrix',
@@ -180,6 +181,55 @@ ShinySRT also incorporates deconvolution functionality, allowing the inference o
 
 
 ![](image/content6-2.png)
+
+
+
+ShinySRT can also read and process raw data output by SpaceRanger and custom datasets (such as matrices, positions, etc.) to obtain a complete Seurat object. Afterward, running CreateShinySRT will generate the corresponding interface.
+
+
+
+![](image/content12.png)
+
+
+```r
+library(shinySRT)
+
+dir.create('shinyexample')
+setwd('shinyexample')
+
+## matrix: SRT data directory
+## single SRT data
+## rawdata process
+dat <- single_op_dir(dir = 'GBM/')
+
+CreateshinySRT(dat)
+
+```
+
+
+
+For the convenience of reading and processing multiple samples, users need to place the directories of multiple samples in a common directory.
+
+
+![](image/content11.png)
+
+```r
+library(shinySRT)
+
+## rawdata process
+dat <- shinySRT::multi_dir_spatial('multi_raw/')
+
+dir.create('multi_sample')
+setwd('multi_sample')
+
+CreateshinySRT(dat)
+
+```
+
+We have also established a webpage for shinySRT where users can upload their own SRT data to generate the corresponding interface, as shown in the following figure. For detailed instructions, please refer to the webpage.
+
+
+![](image/content777.png)
 
 
 ---

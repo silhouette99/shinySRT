@@ -33,11 +33,19 @@ load_spatial <-
       data  <- data[, -1]
     }
     
-    if(length(intersect(rownames(data), toupper(rownames(data)))) > length(intersect(rownames(data),HgMM_ex(rownames(data)))) | 
-       sum(grepl("^ENSG000", rownames(data))) > sum(grepl("^ENSMUSG000",rownames(data)))){
-      species <- 'hg'
+    if(length(intersect(rownames(data), toupper(rownames(data)))) > length(intersect(rownames(data),HgMM_ex(rownames(data))))){
+      if(sum(grepl("^ENSG000", rownames(data))) > sum(grepl("^ENSMUSG000",rownames(data)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
+      
     }else{
-      species <- 'mm'
+      if(sum(grepl("^ENSG000", rownames(data))) > sum(grepl("^ENSMUSG000",rownames(data)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
     }
     
     tmp = read.table(system.file("extdata", paste0(species, '_map.txt.gz'), package = 'shinySRT'),
@@ -66,12 +74,12 @@ load_spatial <-
     
     if (length(meta) > 0) {
       if (length(grep(pattern = '.xlsx', meta)) > 0) {
-        coordination <- read.xlsx(meta, rowNames = T)
+        meta <- read.xlsx(meta, rowNames = T)
       } else {
-        coordination <- data.table::fread(meta) %>% as.data.frame()
-        rownames(coordination)  <-
-          coordination[, grep(pattern = 'barcode|Barcode',
-                              colnames(coordination),
+        meta <- data.table::fread(meta) %>% as.data.frame()
+        rownames(meta)  <-
+          meta[, grep(pattern = 'barcode|Barcode',
+                              colnames(meta),
                               value = T)]
       }
       
@@ -139,7 +147,7 @@ load_spatial <-
           spot_diameter_fullres = 1
         )
         unnormalized.radius <- 1
-        spot.radius <- 1
+        spot.radius <- 0.02
       }
       img_obj <- new(
         Class = "VisiumV1",
@@ -292,11 +300,19 @@ obj_list_process <- function(obj_list,
     })
     
     obj_t <- Reduce(merge, obj_list_t)
-    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t)))) | 
-       sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
-      species <- 'hg'
+    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t))))){
+      if(sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
+      
     }else{
-      species <- 'mm'
+      if(sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
     }
     obj_t <-
       seurat_sp_process(obj = obj_t, species = species, npcs = npcs,resolution = resolution)
@@ -354,11 +370,19 @@ obj_list_process <- function(obj_list,
     })
     
     obj_t <- Reduce(merge, obj_list_t)
-    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t)))) | 
-       sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
-      species <- 'hg'
+    if(length(intersect(rownames(obj_t), toupper(rownames(obj_t)))) > length(intersect(rownames(obj_t),HgMM_ex(rownames(obj_t))))){
+      if(sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
+      
     }else{
-      species <- 'mm'
+      if(sum(grepl("^ENSG000", rownames(obj_t))) > sum(grepl("^ENSMUSG000",rownames(obj_t)))){
+        species <- 'hg'
+      }else{
+        species <- 'mm'
+      }
     }
     obj_t <-
       seurat_sp_process(obj = obj_t, species = species, npcs = npcs,resolution = resolution)
