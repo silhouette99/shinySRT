@@ -186,7 +186,6 @@ ShinySRT also incorporates deconvolution functionality, allowing the inference o
 <div align=center>![](https://github.com/silhouette99/picture/blob/main/plot6s.png)
 
 
-
 ShinySRT can also read and process raw data output by SpaceRanger and custom datasets (such as matrices, positions, etc.) to obtain a complete Seurat object. Afterward, running CreateShinySRT will generate the corresponding interface.
 
 
