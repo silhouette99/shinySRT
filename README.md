@@ -192,8 +192,9 @@ ShinySRT also incorporates deconvolution functionality, allowing the inference o
 ShinySRT can also read and process raw data output by SpaceRanger and custom datasets (such as matrices, positions, etc.) to obtain a complete Seurat object. Afterward, running CreateShinySRT will generate the corresponding interface.
 
 
-
-<div align=center>![](image/content12.png)
+<div align=center>
+<img src="image/content12.png" width="1000" height="800"/>
+</div>
 
 
 ```r
@@ -216,7 +217,9 @@ CreateshinySRT(dat)
 For the convenience of reading and processing multiple samples, users need to place the directories of multiple samples in a common directory.
 
 
-<div align=center>![](image/content11.png)
+<div align=center>
+<img src="image/content11.png" width="600" height="600"/>
+</div>
 
 ```r
 library(shinySRT)
@@ -234,8 +237,9 @@ CreateshinySRT(dat)
 We have also established a webpage for shinySRT where users can upload their own SRT data to generate the corresponding interface, as shown in the following figure. For detailed instructions, please refer to the [webpage](https://shinysrt.kratoss.site/apps/archive/shinySRT_display/shinyspatial_app/).
 
 
-![](image/content777.png)
-
+<div align=center>
+<img src="image/content777.png" width="600" height="600"/>
+</div>
 
 ---
 
