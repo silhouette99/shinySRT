@@ -193,7 +193,7 @@ ShinySRT can also read and process raw data output by SpaceRanger and custom dat
 
 
 <div align=center>
-<img src="image/content12.png" width="1000" height="800"/>
+<img src="image/content12.png" width="200" height="200"/>
 </div>
 
 
@@ -218,7 +218,7 @@ For the convenience of reading and processing multiple samples, users need to pl
 
 
 <div align=center>
-<img src="image/content11.png" width="600" height="600"/>
+<img src="image/content11.png" width="200" height="200"/>
 </div>
 
 ```r
@@ -238,7 +238,7 @@ We have also established a webpage for shinySRT where users can upload their own
 
 
 <div align=center>
-<img src="image/content777.png" width="600" height="600"/>
+<img src="image/content777.png" width="800" height="600"/>
 </div>
 
 ---
