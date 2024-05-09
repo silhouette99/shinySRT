@@ -40,18 +40,21 @@ Users could deploy their application utilizing a customized list that includes a
 
 ## Installation
 
-To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed (The best version of R is 4.0 or above, to prevent some R packages are not good to install or incompatibility):
+To begin, it's important to verify whether the necessary installation packages for `shinySRT` have already been installed (The best version of R is 4.2 or above, to prevent some R packages are not good to install or incompatibility):
 
 ``` r
 
 # If you employ Conda, it is imperative to install the essential packages requisite for the analysis of single-cell and spatial genomic data.
-# mamba install conda-forge::r-cairo conda-forge::r-hdf5r conda-forge::r-curl conda-forge::r-devtools conda-forge::r-biocmanager conda-forge::r-rfast conda-forge::quadprog -y
+# mamba install conda-forge::r-cairo conda-forge::r-hdf5r conda-forge::r-curl conda-forge::r-devtools conda-forge::r-stringi conda-forge::r-biocmanager conda-forge::r-rfast conda-forge::quadprog -y
 
 if (!require('pacman')) install.packages('pacman')
 
 BiocManager::install(c('scran','Seurat'))
 
+
 devtools::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
+# remotes::install_github(c('YuLab-SMU/ggtree', 'silhouette99/shinySRT'))
+# install.package('Seurat')
 
 pacman::p_load(
   'Cairo',
@@ -150,31 +153,31 @@ The Shiny app created by `shinySRT` comprises five primary modules, as indicated
 The current view represents the initial module titled "SpotInfo vs GeneExpr," primarily illustrating the connection between spatial spot annotations and gene expression. Users can switch the spot annotations using the dropdown menu labeled "Spot information" and choose the displayed genes from the dropdown menu labeled "Gene expression." The top of the gene in the display of the expression of the spots information statistics(highlighted in a green box), You can select regions for comparison by using the following spatial plot, these operations will also be reflected in the table, the following interactive selection of spots using ggiraph's method, by hovering over the spatial plot to get the information of each spatial plot, please refer to the specific use of [ggiraph](https://davidgohel.github.io/ggiraph/).
 
 
-![](image/content1-1.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot1s.png)
 
 
 The second module, 'GeneExpr vs GeneExpr', is dedicated to examining the relationship between the spatial expressions of two genes. Expression thresholds for these genes can be adjusted using the sliders on the right, while the adjacent table provides statistical analysis pertaining to the co-determination of the genes.
 
 
-![](image/content2-1.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot2s.png)
 
 
 The third module, titled 'Viol / Box Data Chart', is designed to generate convetional statistical box and violin plots. These plots are derived from the annotation information, alongside the gene expression or scoring of the spot, thereby illustrating the relationship between the annotation information and the genes.
 
 
-![](image/content3-1.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot3s.png)
 
 
 The fourth module, "Portion data chart", shows the proportion of one grouping of information over another, e.g., the proportion or number of seurat subgroups in each anatomical region of the brain, with most of the spots in the HT region belonging to the four subgroups.
 
 
-![](image/content4-1.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot4s.png)
 
 
 The fifth module shows the expression of genes in different regions by means of "bubble charts or heatmaps", which can also be clustered in rows and columns respectively.
 
 
-![](image/content5-1.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot2s.png)
 
 
 ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html). Please refer to [deconvolusion](docs/deconvolusion.md) for specific instructions.

@@ -280,17 +280,25 @@ ui_p2 <- function(df_select) {
   bg_for <- paste('fluidRow(', bg_for, sep = '')
   
   coex_leg <- c(
-    '          fluidRow(column(12,column(4,column(6,fluidRow(shiny::radioButtons(\"col_sel\",\"color select:\",\n',
-    '              choices = c(\"Red (Gene1); Blue (Gene2)\",\"Orange (Gene1); Blue (Gene2)\",\n',
-    '                          \"Red (Gene1); Green (Gene2)\",\"Green (Gene1); Blue (Gene2)\"),\n',
-    '              selected = \"Red (Gene1); Blue (Gene2)\",inline = TRUE)),fluidRow(\n',
-    '                shiny::selectInput(inputId = \"gene_f1\",label = \"gene1 names:\",choices = NULL,width = \"50%\"),\n',
-    '                shiny::selectInput(inputId = \"gene_f2\",label = \"gene2 names:\",choices = NULL,width = \"50%\")\n',
-    '              )),column(6,\n',
-    '             shiny::sliderInput(inputId = \'thrd1\',label = \"Gene1 expression threshold\",min = 0, max = 1,value = 0),\n',
-    '            shiny::sliderInput(inputId = \'thrd2\',label = \"Gene2 expression threshold\",min = 0,max = 1,value = 0))),\n',
-    '            column(3,box(width = 10,height = 300,shiny::plotOutput(outputId = \'coexp_leg\'))),\n',
-    '            column(5,box(collapsed = F,width = 12, align = \"center\",status = \"primary\",solidHeader = TRUE,collapsible = TRUE,DTOutput(outputId = \'coexp_table\'))))),\n\n'
+    '          br(),br(),\n',
+    '          fluidRow(column(12,column(5,fluidRow(column(8,column(6,\n',
+    '           fluidRow(shiny::radioButtons(\"col_sel\",\"color select:\",width = \'100%\',\n',
+    '           choices = c(\"Red (Gene1); Blue (Gene2)\",\"Orange (Gene1); Blue (Gene2)\",\n',
+    '            \"Red (Gene1); Green (Gene2)\",\"Green (Gene1); Blue (Gene2)\"),\n',
+    '           selected = \"Red (Gene1); Blue (Gene2)\",inline = TRUE)),\n',
+    '           fluidRow(\n',
+    '            shiny::selectInput(inputId = \"gene_f1\",label = \"gene1 names:\",choices = NULL,width = \"50%\"),\n',
+    '            shiny::selectInput(inputId = \"gene_f2\",label = \"gene2 names:\",choices = NULL,width = \"50%\"))),\n',
+    '           column(6,\n',
+    '            shiny::sliderInput(inputId = \'thrd1\',label = \"Gene1 expression threshold\",\n',
+    '             min = 0, max = 1,value = 0),shiny::sliderInput(inputId = \'thrd2\',\n',
+    '             label = \"Gene2 expression threshold\",min = 0,max = 1,value = 0))),\n',
+    '           column(4, box(width = 12,height = 300,shiny::plotOutput(outputId = \'coexp_leg\')))),\n',
+    '           fluidRow(column(12,box(collapsed = F,width = 12,align = \"center\",status = \"primary\",solidHeader = TRUE,\n',
+    '            collapsible = TRUE,DTOutput(outputId = \'coexp_table\'))))),\n',
+    '            column(7,box(collapsed = F,width = 12,align = \"center\",\n',
+    '             status = \"primary\",solidHeader = TRUE,collapsible = TRUE,\n',
+    '             ggiraph::girafeOutput(outputId = \'coexp_vln\',height = 600))))),br(),br(),\n\n'
   )
   coex_leg <- paste(coex_leg,collapse = '')
   
