@@ -177,13 +177,13 @@ The fourth module, "Portion data chart", shows the proportion of one grouping of
 The fifth module shows the expression of genes in different regions by means of "bubble charts or heatmaps", which can also be clustered in rows and columns respectively.
 
 
-![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot2s.png)
+![](https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot5s.png)
 
 
 ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html). Please refer to [deconvolusion](docs/deconvolusion.md) for specific instructions.
 
 
-![](image/content6-2.png)
+<div align=center>![](https://github.com/silhouette99/picture/blob/main/plot6s.png)
 
 
 
@@ -191,7 +191,7 @@ ShinySRT can also read and process raw data output by SpaceRanger and custom dat
 
 
 
-![](image/content12.png)
+<div align=center>![](image/content12.png)
 
 
 ```r
@@ -214,7 +214,7 @@ CreateshinySRT(dat)
 For the convenience of reading and processing multiple samples, users need to place the directories of multiple samples in a common directory.
 
 
-![](image/content11.png)
+<div align=center>![](image/content11.png)
 
 ```r
 library(shinySRT)
