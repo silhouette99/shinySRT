@@ -218,7 +218,7 @@ For the convenience of reading and processing multiple samples, users need to pl
 
 
 <div align=center>
-<img src="image/content11.png" width="200" height="200"/>
+<img src="image/content11.png" width="400" height="400"/>
 </div>
 
 ```r
@@ -238,7 +238,7 @@ We have also established a webpage for shinySRT where users can upload their own
 
 
 <div align=center>
-<img src="image/content777.png" width="800" height="600"/>
+<img src="image/content777.png" width="800" height="500"/>
 </div>
 
 ---
