@@ -183,7 +183,9 @@ The fifth module shows the expression of genes in different regions by means of 
 ShinySRT also incorporates deconvolution functionality, allowing the inference of cellular components within samples by integrating the expression matrix and metadata from single-cell transcriptomics. These results can be visualized within the interface. The deconvolution process is based on the DWLS (Doubly Weighted Least Squares) method utilized in [Giotto](https://giottosuite.readthedocs.io/en/latest/subsections/datasets/mouse_visium_brain.html). Please refer to [deconvolusion](docs/deconvolusion.md) for specific instructions.
 
 
-<img src="https://github.com/silhouette99/picture/blob/main/plot6s.png" width = "100" height = "100" div align=center />
+<div align=center>
+![](https://github.com/silhouette99/picture/blob/main/plot6s.png)
+</div>
 
 
 ShinySRT can also read and process raw data output by SpaceRanger and custom datasets (such as matrices, positions, etc.) to obtain a complete Seurat object. Afterward, running CreateShinySRT will generate the corresponding interface.
