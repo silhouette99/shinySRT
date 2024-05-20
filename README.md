@@ -243,7 +243,7 @@ We have also established a webpage for shinySRT where users can upload their own
 
 ---
 
-For detailed tutorial, please refer to [Tutorial](docs/shinySRT-guide). We also compared shinySRT with other SRT visualization tools in [this](docs/comparation.md).
+For detailed tutorial, please refer to [Tutorial](https://github.com/silhouette99/shinySRT-guide/blob/main/README.md). We also compared shinySRT with other SRT visualization tools in [this](https://github.com/silhouette99/shinySRT-guide/blob/main/shiny-display.md).
 
 ## Q&A
 
