@@ -184,7 +184,7 @@ ShinySRT also incorporates deconvolution functionality, allowing the inference o
 
 
 <div align=center>
-<img src="https://github.com/silhouette99/picture/blob/silhouette99-shinySRT/plot6s.png" width="1000" height="800"/>
+<img src="https://github.com/silhouette99/picture/blob/main/plot6s.png" width="1000" height="800"/>
 </div>
 
 
