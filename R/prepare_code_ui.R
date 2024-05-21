@@ -242,22 +242,9 @@ ui_p2 <- function(df_select) {
     nr = ceiling(slices / 4)
     nc = 3
   }
-  # slices <- length(unique(df_select$slice))
-  # if (slices <= 4) {
-  #   nr = 1
-  #   if (slices <= 2) {
-  #     nc = 6
-  #   } else{
-  #     nc = 12 / slices
-  #   }
-  #   
-  # } else{
-  #   nr = ceiling(slices / 4)
-  #   nc = 3
-  # }
-  ## bgplot
+  
   bg_for <- lapply(1:nr, function(l) {
-    eachr <- 1:4+4*(l-1)
+    eachr <- 1:4 + 4 * (l - 1)
     eachr <- eachr[eachr <= slices]
     bg_for <- lapply(eachr, function(eachc) {
       if (eachc == max(eachr)) {
@@ -300,10 +287,10 @@ ui_p2 <- function(df_select) {
     '             status = \"primary\",solidHeader = TRUE,collapsible = TRUE,\n',
     '             ggiraph::girafeOutput(outputId = \'coexp_vln\',height = 600))))),br(),br(),\n\n'
   )
-  coex_leg <- paste(coex_leg,collapse = '')
+  coex_leg <- paste(coex_leg, collapse = '')
   
   co_for <- lapply(1:nr, function(l) {
-    eachr <- 1:4+4*(l-1)
+    eachr <- 1:4 + 4 * (l - 1)
     eachr <- eachr[eachr <= slices]
     co_for <- lapply(eachr, function(eachc) {
       if (eachc == max(eachr)) {
@@ -311,9 +298,9 @@ ui_p2 <- function(df_select) {
       } else{
         m = ','
       }
-      if(eachc == max(eachr) & l != max(nr)){
+      if (eachc == max(eachr) & l != max(nr)) {
         ls = ','
-      }else{
+      } else{
         ls = ''
       }
       glue::glue(
@@ -338,11 +325,62 @@ ui_p2 <- function(df_select) {
       )
       
     }) %>% unlist() %>% paste(collapse = '')
-    co_for <- paste('fluidRow(\n', co_for, sep = '')
+    co_for <-
+      paste('tabPanel("Co-gene spatial", fluidRow(\n', co_for, sep = '')
   }) %>% unlist() %>% paste(collapse = '')
-  co_for <- paste(co_for, ')))),\n\n', sep = '')
+  co_for <- paste(co_for, '),\n\n', sep = '')
   
-  ui_p2 <- paste0(ui_p2_head,bg_for,coex_leg,co_for,'\n\n')%>%glue::glue()
+  
+  co_for2 <- lapply(1:nr, function(l) {
+    eachr <- 1:4 + 4 * (l - 1)
+    eachr <- eachr[eachr <= slices]
+    co_for2 <- lapply(eachr, function(eachc) {
+      if (eachc == max(eachr)) {
+        m = ')'
+      } else{
+        m = ','
+      }
+      if (eachc == max(eachr) & l != max(nr)) {
+        ls = ','
+      } else{
+        ls = ''
+      }
+      glue::glue(
+        '           column({nc},style = \"border-right: 2px solid black\",\n',
+        '           box(width = 12,collapsible = T,\n',
+        '             title = unique(df_select$slice)[{eachc}],\n',
+        '             status = \"primary\",solidHeader = TRUE,\n',
+        '             ggiraph::girafeOutput(outputId = \'coexpscore{eachc}\',height = df_select$image_size)),\n',
+        '           fluidRow(\n',
+        '             column(6,br(),\n',
+        '               downloadButton(\"coexpscore{eachc}.pdf\", \"Download PDF\"),\n',
+        '               downloadButton(\"coexpscore{eachc}.png\", \"Download PNG\")),\n',
+        '             column(6,\n',
+        '               div(style = \"display:inline-block\",\n',
+        '                numericInput(\"coexpscore{eachc}.h\", \"PDF / PNG height:\",\n',
+        '                 width = \"138px\",min = 4,\n',
+        '                 max = 20,value = 6,step = 0.5)),\n',
+        '               div(style = \"display:inline-block\",\n',
+        '                numericInput(\"coexpscore{eachc}.w\", \"PDF / PNG width:\",\n',
+        '                 width = \"138px\",min = 4,\n',
+        '                 max = 20,value = 12,step = 0.5))))){m}{ls}\n\n'
+      )
+    }) %>% unlist() %>% paste(collapse = '')
+    co_for2 <-
+      paste('tabPanel("Co-Exp score", fluidRow(\n', co_for2, sep = '')
+  }) %>% unlist() %>% paste(collapse = '')
+  co_for2 <- paste(co_for2, ')\n', sep = '')
+  co_for <-
+    paste0(
+      'tabBox(\n title = \"Coexpression\",width = 12,\n id = \"tabset1\", height = df_select$image_size,\n\n',
+      co_for,
+      '\n',
+      co_for2,
+      ')\n'
+    )
+  co_for <- paste(co_for, ')))),\n\n', sep = '')
+  ui_p2 <-
+    paste0(ui_p2_head, bg_for, coex_leg, co_for, '\n\n') %>% glue::glue()
   return(ui_p2)
 }
 
