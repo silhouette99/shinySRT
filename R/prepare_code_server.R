@@ -2028,7 +2028,7 @@ fun_server <- function() {
     '    h5data <- h5file[[\'grp\']][[\'data\']]\n',
     '    val1 <- h5data$read(args = list(genesets[g1], quote(expr = )))\n',
     '    val2 <- h5data$read(args = list(genesets[g2], quote(expr = )))\n',
-    '    meta[, \'Coexp Score\'] <- sqrt(val1 * val2)\n',
+    '    meta[, \'Coexp Score\'] <- val1 * val2\n',
     '    \n',
     '    # li <- (max(val1) * threshold1)*(max(val2) * threshold2)\n',
     '    \n',
